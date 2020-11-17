@@ -28,6 +28,8 @@ func searchForItem(name string) map[string]string {
 			return
 		}
 		link := h.Request.AbsoluteURL(h.Attr("href"))
+		name = h.DOM.SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
+		results[name] = link
 	})
 
 	c.OnHTML("a.go-to-product[href]", func(h *colly.HTMLElement) {
@@ -35,6 +37,7 @@ func searchForItem(name string) map[string]string {
 			return
 		}
 		link := h.Request.AbsoluteURL(h.Attr("href"))
+		results[h.Text] = link
 	})
 
 	c.Visit(url)
