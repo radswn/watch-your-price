@@ -1,4 +1,4 @@
-package main
+package ceneo
 
 import (
 	"fmt"
