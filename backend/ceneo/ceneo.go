@@ -19,8 +19,8 @@ func SearchForItem(name string, firstPage bool) map[string]string {
 
 	c.Limit(&colly.LimitRule{
 		DomainGlob:  "www.ceneo.pl/*",
-		Delay:       10 * time.Second,
-		RandomDelay: 10 * time.Second,
+		Delay:       3 * time.Second,
+		RandomDelay: 1 * time.Second,
 	})
 
 	q, _ := queue.New(
