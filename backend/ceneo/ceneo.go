@@ -1,8 +1,10 @@
 package ceneo
 
 import (
+	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 )
@@ -52,6 +54,8 @@ func SearchForItem(name string) map[string]string {
 		results[linkTag.Text()] = link
 	})
 
+	//TODO reduce number of results or add some kind of pagination
+
 	q.AddURL(url)
 	q.Run(c)
 
@@ -60,16 +64,27 @@ func SearchForItem(name string) map[string]string {
 	return results
 }
 
-//TODO
-// func checkPrice(url string) string {
+// CheckPrice checks the price of the item at the given url
+func CheckPrice(url string) string {
+	//TODO
+	var price string
+	c := colly.NewCollector(
+		colly.AllowedDomains("www.ceneo.pl"),
+	)
 
-// 	c.OnHTML("h1.js_product-h1-link", func(h *colly.HTMLElement) {
-// 		h.DOM.ParentsUntil("~").Find("meta").Each(func(_ int, s *goquery.Selection) {
-// 			property, _ := s.Attr("property")
-// 			if strings.EqualFold(property, "product:price:amount") {
-// 				price, _ := s.Attr("content")
-// 				fmt.Println(strings.TrimSpace(h.Text) + "|" + price)
-// 			}
-// 		})
-// 	})
-// }
+	c.Limit(&colly.LimitRule{
+		DomainGlob:  "www.ceneo.pl/*",
+		Delay:       10 * time.Second,
+		RandomDelay: 10 * time.Second,
+	})
+	c.OnHTML("h1.js_product-h1-link", func(h *colly.HTMLElement) {
+		h.DOM.ParentsUntil("~").Find("meta").Each(func(_ int, s *goquery.Selection) {
+			property, _ := s.Attr("property")
+			if strings.EqualFold(property, "product:price:amount") {
+				price, _ = s.Attr("content")
+			}
+		})
+	})
+	c.Visit(url)
+	return price
+}
