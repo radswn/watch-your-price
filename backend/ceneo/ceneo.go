@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2/queue"
 )
 
 func searchForItem(name string) map[string]string {
@@ -19,8 +20,14 @@ func searchForItem(name string) map[string]string {
 		RandomDelay: 10 * time.Second,
 	})
 
+	q, _ := queue.New(
+		4,
+		&queue.InMemoryQueueStorage{MaxSize: 10000},
+	)
+
 	c.OnHTML("a.js_pagination-top-next", func(h *colly.HTMLElement) {
 		link := h.Request.AbsoluteURL(h.Attr("href"))
+		q.AddURL(h.Request.AbsoluteURL(link))
 	})
 
 	c.OnHTML("a.grid-item__thumb[href]", func(h *colly.HTMLElement) {
@@ -40,6 +47,10 @@ func searchForItem(name string) map[string]string {
 		results[h.Text] = link
 	})
 
-	c.Visit(url)
+	q.AddURL(url)
+	q.Run(c)
+
+	c.Wait()
+
 	return results
 }
