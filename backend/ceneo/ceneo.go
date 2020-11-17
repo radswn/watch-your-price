@@ -31,12 +31,14 @@ func SearchForItem(name string) map[string]string {
 		q.AddURL(h.Request.AbsoluteURL(link))
 	})
 
-	c.OnHTML("a.grid-item__thumb[href]", func(h *colly.HTMLElement) {
-		if h.DOM.HasClass("go-to-shop") {
+	c.OnHTML("div.grid-row", func(h *colly.HTMLElement) {
+		linkTag := h.DOM.Find("a").First()
+		if linkTag.HasClass("go-to-shop") {
 			return
 		}
-		link := h.Request.AbsoluteURL(h.Attr("href"))
-		name = h.DOM.SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
+		relativeLink, _ := linkTag.Attr("href")
+		link := h.Request.AbsoluteURL(relativeLink)
+		name = linkTag.SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
 		results[name] = link
 	})
 
