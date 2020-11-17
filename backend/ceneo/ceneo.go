@@ -7,7 +7,8 @@ import (
 	"github.com/gocolly/colly/v2/queue"
 )
 
-func searchForItem(name string) map[string]string {
+// SearchForItem will use the name to search for products on a page and return results
+func SearchForItem(name string) map[string]string {
 	results := make(map[string]string)
 	url := "https://www.ceneo.pl/;szukaj-" + name
 	c := colly.NewCollector(
