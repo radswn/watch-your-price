@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"ceneo"
+	"fmt"
+)
 
 func main() {
-	fmt.Println("Hello")
+	m := ceneo.SearchForItem("xiaomi redmi note 8t")
+	for name, url := range m {
+		fmt.Println(name + "|" + url)
+	}
 }
