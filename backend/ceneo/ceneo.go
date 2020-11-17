@@ -54,3 +54,17 @@ func searchForItem(name string) map[string]string {
 
 	return results
 }
+
+//TODO
+// func checkPrice(url string) string {
+
+// 	c.OnHTML("h1.js_product-h1-link", func(h *colly.HTMLElement) {
+// 		h.DOM.ParentsUntil("~").Find("meta").Each(func(_ int, s *goquery.Selection) {
+// 			property, _ := s.Attr("property")
+// 			if strings.EqualFold(property, "product:price:amount") {
+// 				price, _ := s.Attr("content")
+// 				fmt.Println(strings.TrimSpace(h.Text) + "|" + price)
+// 			}
+// 		})
+// 	})
+// }
