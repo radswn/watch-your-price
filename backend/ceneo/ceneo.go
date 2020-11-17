@@ -43,7 +43,7 @@ func SearchForItem(name string, firstPage bool) map[string]string {
 		relativeLink, _ := linkTag.Attr("href")
 		link := h.Request.AbsoluteURL(relativeLink)
 		name = linkTag.SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
-		results[name] = link
+		results[strings.TrimSpace(name)] = link
 	})
 
 	c.OnHTML("strong.cat-prod-row__name", func(h *colly.HTMLElement) {
@@ -53,7 +53,7 @@ func SearchForItem(name string, firstPage bool) map[string]string {
 		}
 		relativeLink, _ := linkTag.Attr("href")
 		link := h.Request.AbsoluteURL(relativeLink)
-		results[linkTag.Text()] = link
+		results[strings.TrimSpace(linkTag.Text())] = link
 	})
 
 	//TODO reduce number of results or add some kind of pagination
