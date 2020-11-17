@@ -10,7 +10,7 @@ import (
 )
 
 // SearchForItem will use the name to search for products on a page and return results
-func SearchForItem(name string) map[string]string {
+func SearchForItem(name string, firstPage bool) map[string]string {
 	results := make(map[string]string)
 	url := "https://www.ceneo.pl/;szukaj-" + name
 	c := colly.NewCollector(
@@ -28,10 +28,12 @@ func SearchForItem(name string) map[string]string {
 		&queue.InMemoryQueueStorage{MaxSize: 10000},
 	)
 
-	c.OnHTML("a.js_pagination-top-next", func(h *colly.HTMLElement) {
-		link := h.Request.AbsoluteURL(h.Attr("href"))
-		q.AddURL(h.Request.AbsoluteURL(link))
-	})
+	if !firstPage {
+		c.OnHTML("a.js_pagination-top-next", func(h *colly.HTMLElement) {
+			link := h.Request.AbsoluteURL(h.Attr("href"))
+			q.AddURL(h.Request.AbsoluteURL(link))
+		})
+	}
 
 	c.OnHTML("div.grid-row", func(h *colly.HTMLElement) {
 		linkTag := h.DOM.Find("a").First()
@@ -66,7 +68,6 @@ func SearchForItem(name string) map[string]string {
 
 // CheckPrice checks the price of the item at the given url
 func CheckPrice(url string) string {
-	//TODO
 	var price string
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.ceneo.pl"),
