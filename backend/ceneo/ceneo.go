@@ -40,12 +40,14 @@ func SearchForItem(name string) map[string]string {
 		results[name] = link
 	})
 
-	c.OnHTML("a.go-to-product[href]", func(h *colly.HTMLElement) {
-		if h.DOM.HasClass("go-to-shop") {
+	c.OnHTML("strong.cat-prod-row__name", func(h *colly.HTMLElement) {
+		linkTag := h.DOM.Find("a").First()
+		if linkTag.HasClass("go-to-shop") {
 			return
 		}
-		link := h.Request.AbsoluteURL(h.Attr("href"))
-		results[h.Text] = link
+		relativeLink, _ := linkTag.Attr("href")
+		link := h.Request.AbsoluteURL(relativeLink)
+		results[linkTag.Text()] = link
 	})
 
 	q.AddURL(url)
