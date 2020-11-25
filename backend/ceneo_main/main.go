@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ceneo"
+	"backend/ceneo"
 	"fmt"
 )
 
