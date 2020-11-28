@@ -23,5 +23,5 @@ func (wt *WebsiteType) UnmarshalJSON(b []byte) error {
 	case Ceneo:
 		return nil
 	}
-	return errors.New("Invalid leave type")
+	return errors.New("Invalid website type")
 }
