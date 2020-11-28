@@ -1,6 +1,9 @@
 package search_module
 
-import "errors"
+import (
+	"backend/search_module/website_type"
+	"errors"
+)
 
 type SearchResult struct {
 	Phrase     string
@@ -9,16 +12,10 @@ type SearchResult struct {
 	Results    map[string]string
 }
 
-type WebsiteType string
-
-const (
-	ceneo WebsiteType = "ceneo"
-)
-
-type searchRequest struct {
-	phrase  string
-	page    int
-	website WebsiteType
+type SearchRequest struct {
+	Phrase  string
+	Page    int
+	Website website_type.WebsiteType
 }
 
 type WebsiteSearch interface {
