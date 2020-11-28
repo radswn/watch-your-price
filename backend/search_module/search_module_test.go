@@ -24,23 +24,3 @@ func (tws testWebsiteSearch) GetResults(phrase string, page int) (search_module.
 	}
 	return sr, nil
 }
-
-func TestUnmarshallingJsonRequestShouldReturnObjectWithCorrectFields(t *testing.T) {
-	jsonInput := []byte(`{"phrase": "test", "page": 3, "Website": "ceneo"}`)
-	var request search_module.SearchRequest
-	err := json.Unmarshal(jsonInput, &request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if request.Phrase != "test" {
-		t.Fatal("Incorrect phrase in request object")
-	}
-
-	if request.Page != 3 {
-		t.Fatal("Incorrect page number in request object")
-	}
-
-	if request.Website != website_type.Ceneo {
-		t.Fatal("Incorrect website type in request object")
-	}
-}
