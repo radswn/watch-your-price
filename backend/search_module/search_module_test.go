@@ -60,7 +60,12 @@ func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) 
 	websiteSearchMap[website_type.Ceneo] = testWebsiteSearch{}
 	module, err := search_module.New(websiteSearchMap)
 	assert.Nil(t, err)
-	requestData := []byte(`{"phrase" : "test", "page" : 3, "website" : "ceneo"}`)
+
+	requestData := search_module.SearchRequest{
+		Phrase:  "test",
+		Page:    3,
+		Website: "ceneo",
+	}
 
 	expectedPhrase := "test"
 	expectedPage := 3
