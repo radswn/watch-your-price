@@ -9,7 +9,6 @@ type WebsiteType string
 
 const (
 	Ceneo WebsiteType = "ceneo"
-	Empty WebsiteType = ""
 )
 
 func (wt *WebsiteType) UnmarshalJSON(b []byte) error {
@@ -23,8 +22,6 @@ func (wt *WebsiteType) UnmarshalJSON(b []byte) error {
 	switch *wt {
 	case Ceneo:
 		return nil
-	case Empty:
-		return errors.New("Empty value")
 	}
 	return errors.New("Invalid leave type")
 }
