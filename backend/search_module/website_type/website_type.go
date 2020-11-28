@@ -23,6 +23,8 @@ func (wt *WebsiteType) UnmarshalJSON(b []byte) error {
 	switch *wt {
 	case Ceneo:
 		return nil
+	case Empty:
+		return errors.New("Empty value")
 	}
 	return errors.New("Invalid leave type")
 }
