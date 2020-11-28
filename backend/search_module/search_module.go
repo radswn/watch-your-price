@@ -23,10 +23,10 @@ type WebsiteSearch interface {
 }
 
 type searchModule struct {
-	websites []WebsiteSearch
+	websites map[website_type.WebsiteType]WebsiteSearch
 }
 
-func New(websites []WebsiteSearch) (searchModule, error) {
+func New(websites map[website_type.WebsiteType]WebsiteSearch) (searchModule, error) {
 	if len(websites) == 0 {
 		return searchModule{}, errors.New("Search module should have at least one website")
 	}
