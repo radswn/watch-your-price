@@ -16,3 +16,11 @@ type WebsiteSearch interface {
 type searchModule struct {
    websites []WebsiteSearch
 }
+
+func New(websites []WebsiteSearch) (searchModule, error) {
+   if len(websites) == 0 {
+       return searchModule{}, errors.New("Search module should have at least one website")
+   }
+   search := searchModule{websites: websites}
+   return search, nil
+}
