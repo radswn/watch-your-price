@@ -2,6 +2,7 @@ package search_module
 
 import (
 	"backend/search_module/website_type"
+	"encoding/json"
 	"errors"
 )
 
@@ -32,4 +33,15 @@ func New(websites map[website_type.WebsiteType]WebsiteSearch) (*searchModule, er
 	}
 	search := &searchModule{websites: websites}
 	return search, nil
+}
+
+func (sm searchModule) Search(request []byte) (*SearchResult, error) {
+	var search SearchRequest
+	err := json.Unmarshal(request, &search)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := sm.websites[search.Website].GetResults(search.Phrase, search.Page)
+	return &result, nil
 }
