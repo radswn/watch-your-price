@@ -12,3 +12,7 @@ type SearchResult struct {
 type WebsiteSearch interface {
    GetResults(phrase string, page int) (SearchResult, error)
 }
+
+type searchModule struct {
+   websites []WebsiteSearch
+}
