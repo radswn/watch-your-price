@@ -6,10 +6,10 @@ import (
 )
 
 type SearchResult struct {
-	Phrase     string
-	Page       int
-	NumOfPages int
-	Results    map[string]string
+	Phrase     string            `json:"phrase" binding:"required"`
+	Page       int               `json:"page" binding:"required"`
+	NumOfPages int               `json:"numOfPages" binding:"required"`
+	Results    map[string]string `json:"results" binding:"required"`
 }
 
 type SearchRequest struct {
