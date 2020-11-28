@@ -13,6 +13,12 @@ type SearchResult struct {
    Results    map[string]string
 }
 
+type websiteType string
+
+const (
+	ceneo websiteType = "ceneo"
+)
+
 type searchRequest struct {
    phrase  string
    page    int
