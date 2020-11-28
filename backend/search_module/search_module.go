@@ -9,16 +9,16 @@ type SearchResult struct {
 	Results    map[string]string
 }
 
-type websiteType string
+type WebsiteType string
 
 const (
-	ceneo websiteType = "ceneo"
+	ceneo WebsiteType = "ceneo"
 )
 
 type searchRequest struct {
 	phrase  string
 	page    int
-	website websiteType
+	website WebsiteType
 }
 
 type WebsiteSearch interface {
