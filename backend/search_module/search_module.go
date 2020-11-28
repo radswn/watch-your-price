@@ -8,3 +8,7 @@ type SearchResult struct {
    NumOfPages int
    Results    map[string]string
 }
+
+type WebsiteSearch interface {
+   GetResults(phrase string, page int) (SearchResult, error)
+}
