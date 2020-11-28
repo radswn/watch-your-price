@@ -26,10 +26,10 @@ type searchModule struct {
 	websites map[website_type.WebsiteType]WebsiteSearch
 }
 
-func New(websites map[website_type.WebsiteType]WebsiteSearch) (searchModule, error) {
+func New(websites map[website_type.WebsiteType]WebsiteSearch) (*searchModule, error) {
 	if len(websites) == 0 {
-		return searchModule{}, errors.New("Search module should have at least one website")
+		return nil, errors.New("Search module should have at least one website")
 	}
-	search := searchModule{websites: websites}
+	search := &searchModule{websites: websites}
 	return search, nil
 }
