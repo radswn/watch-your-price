@@ -5,6 +5,8 @@ import (
 	"backend/search_module/website_type"
 	"encoding/json"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type testWebsiteSearch struct {
@@ -23,4 +25,32 @@ func (tws testWebsiteSearch) GetResults(phrase string, page int) (search_module.
 		},
 	}
 	return sr, nil
+}
+
+func TestUnmarshallingWebsiteTypeWithCorrectValueShouldReturnEnumWithAppropriateType(t *testing.T) {
+	jsonInput := []byte(`"ceneo"`)
+	var wt website_type.WebsiteType
+
+	err := json.Unmarshal(jsonInput, &wt)
+
+	assert.Nil(t, err)
+	assert.Equal(t, wt, website_type.Ceneo)
+}
+
+func TestUnmarshallingWebsiteTypeWithEmptyValueShouldReturnError(t *testing.T) {
+	jsonInput := []byte(`""`)
+	var wt website_type.WebsiteType
+
+	err := json.Unmarshal(jsonInput, &wt)
+
+	assert.NotNil(t, err)
+}
+
+func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testing.T) {
+	jsonInput := []byte(`"not_exist"`)
+	var wt website_type.WebsiteType
+
+	err := json.Unmarshal(jsonInput, &wt)
+
+	assert.NotNil(t, err)
 }
