@@ -7,6 +7,16 @@ type SearchResult struct {
    Page       int
    NumOfPages int
    Results    map[string]string
+   Phrase     string
+   Page       int
+   NumOfPages int
+   Results    map[string]string
+}
+
+type searchRequest struct {
+   phrase  string
+   page    int
+   website websiteType
 }
 
 type WebsiteSearch interface {
