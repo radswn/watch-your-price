@@ -13,9 +13,9 @@ type SearchResult struct {
 }
 
 type SearchRequest struct {
-	Phrase  string
-	Page    int
-	Website website_type.WebsiteType
+	Phrase  string                   `json:"phrase" binding:"required"`
+	Page    int                      `json:"page" binding:"required"`
+	Website website_type.WebsiteType `json:"website" binding:"required"`
 }
 
 type WebsiteSearch interface {
