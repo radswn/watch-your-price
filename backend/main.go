@@ -4,9 +4,28 @@ import (
 	"backend/search_module"
 	"backend/search_module/website_type"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
+
+func init() {
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
+
+	file, err := os.OpenFile("backend.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		logrus.SetOutput(os.Stdout)
+		logrus.WithError(err).Warn("Cannot open log file. Logging to stdout.")
+	} else {
+		logrus.SetOutput(file)
+	}
+
+	// adds information about location of log
+	logrus.SetReportCaller(true)
+}
 
 var db = make(map[string]string)
 var searchModule = setupSearchModule()
