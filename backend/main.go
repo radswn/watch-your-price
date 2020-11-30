@@ -55,11 +55,13 @@ func setupRouter() *gin.Engine {
 		err := c.BindJSON(&request)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			logrus.WithError(err).Info("Could not parse search request.")
 			return
 		}
 		result, err := searchModule.Search(request)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			logrus.WithError(err).Error("Could not get search results.")
 			return
 		}
 		c.JSON(http.StatusOK, result)
@@ -117,7 +119,7 @@ func setupSearchModule() *search_module.SearchModule {
 		website_type.Ceneo: testWebsiteSearch{},
 	})
 	if err != nil {
-		panic("Can't initilize search module")
+		logrus.WithError(err).Panic("Can't initialize search module.")
 	}
 	return searchModule
 }
