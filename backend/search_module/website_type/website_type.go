@@ -5,6 +5,7 @@ import (
 	"errors"
 )
 
+// WebsiteType represent enum with values of implemented search engines
 type WebsiteType string
 
 const (
