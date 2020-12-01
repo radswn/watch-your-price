@@ -3,8 +3,11 @@ package main
 import (
 	"backend/search_module"
 	"backend/search_module/website_type"
+	"fmt"
 	"net/http"
 	"os"
+	"runtime"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -13,6 +16,10 @@ import (
 func init() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
+		CallerPrettyfier: func(r *runtime.Frame) (function string, file string) {
+			filepath := strings.Split(r.File, "/")
+			return "", fmt.Sprintf("%s:%v", filepath[len(filepath)-1], r.Line)
+		},
 	})
 
 	file, err := os.OpenFile("backend.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
