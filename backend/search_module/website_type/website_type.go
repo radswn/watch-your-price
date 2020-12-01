@@ -20,14 +20,22 @@ func (wt *WebsiteType) UnmarshalJSON(b []byte) error {
 	var r *WT = (*WT)(wt)
 	err := json.Unmarshal(b, &r)
 	if err != nil {
-		logrus.WithError(err).Info("Wrong input type for parameter Website.")
-		return errors.New("Wrong value type for parameter Website")
+		logrus.WithError(err).Info("Wrong input type for parameter website.")
+		return errors.New("Wrong value type for parameter website")
 	}
-	switch *wt {
-	case Ceneo:
+
+	if isValueInWebsiteTypeEnum(wt) {
 		return nil
 	}
 	err = errors.New("Invalid website type")
 	logrus.WithError(err).Info()
 	return err
+}
+
+func isValueInWebsiteTypeEnum(value *WebsiteType) bool {
+	switch *value {
+	case Ceneo:
+		return true
+	}
+	return false
 }
