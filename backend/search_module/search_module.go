@@ -3,6 +3,8 @@ package search_module
 import (
 	"backend/search_module/website_type"
 	"errors"
+
+	"github.com/sirupsen/logrus"
 )
 
 // SearchResult represent the response from the website search
@@ -43,6 +45,7 @@ func New(websites map[website_type.WebsiteType]WebsiteSearch) (*SearchModule, er
 func (sm SearchModule) Search(request SearchRequest) (*SearchResult, error) {
 	result, err := sm.websites[request.Website].GetResults(request.Phrase, request.Page)
 	if err != nil {
+		logrus.WithError(err).Error("Could not get results from webpage")
 		return nil, err
 	}
 	return &result, nil
