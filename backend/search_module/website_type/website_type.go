@@ -3,6 +3,8 @@ package website_type
 import (
 	"encoding/json"
 	"errors"
+
+	"github.com/sirupsen/logrus"
 )
 
 // WebsiteType represent enum with values of implemented search engines
@@ -18,11 +20,14 @@ func (wt *WebsiteType) UnmarshalJSON(b []byte) error {
 	var r *WT = (*WT)(wt)
 	err := json.Unmarshal(b, &r)
 	if err != nil {
-		panic(err)
+		logrus.WithError(err).Info("Wrong input type for parameter Website.")
+		return errors.New("Wrong value type for parameter Website")
 	}
 	switch *wt {
 	case Ceneo:
 		return nil
 	}
-	return errors.New("Invalid website type")
+	err = errors.New("Invalid website type")
+	logrus.WithError(err).Info()
+	return err
 }
