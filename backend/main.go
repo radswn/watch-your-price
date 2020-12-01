@@ -35,7 +35,6 @@ func init() {
 }
 
 var db = make(map[string]string)
-var searchModule = setupSearchModule()
 
 func setupRouter() *gin.Engine {
 	// Disable Console Color
@@ -57,6 +56,7 @@ func setupRouter() *gin.Engine {
 			c.JSON(http.StatusOK, gin.H{"user": user, "status": "no value"})
 		}
 	})
+	searchModule := setupSearchModule()
 	r.POST("/search", func(c *gin.Context) {
 		var request search_module.SearchRequest
 		err := c.BindJSON(&request)
