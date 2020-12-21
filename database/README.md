@@ -30,7 +30,7 @@ $ docker-compose down
 Migracja przebiega za pomocą skryptu ```db-migrate.sh```. Po więcej informacji użyj komendy
 
 ```bash
-$ ./db-migrate.sh usage
+$ ./db-migrate.sh
 ```
 
 ### Migracja do najnowszej wersji
