@@ -1,16 +1,16 @@
 #!/bin/bash
 
 usage() {
-    echo "db-migrate.sh <COMMAND>"
+    echo "usage: db-migrate.sh COMMAND"
     echo ""
-    echo "COMMANDS:"
-    echo "create <name> - create new migration script with given <name>"
-    echo "update - update the database to the most recent version"
-    echo "drop - drop whole database schema"
-    echo "version - print the current version of database"
-    echo "goto <ver> - migrate the database to version <ver>"
-    echo "up <x> - migrate the database up <x> versions"
-    echo "down <x> - migrate the database down <x> versions or use -all for revert all changes"
+    echo "  COMMANDS:"
+    echo "  create <name> - create new migration script with given <name>"
+    echo "  update - update the database to the most recent version"
+    echo "  drop - drop the whole database schema"
+    echo "  version - print the current version of database"
+    echo "  goto <ver> - migrate the database to version <ver>"
+    echo "  up <x> - migrate the database up <x> versions"
+    echo "  down <x> - migrate the database down <x> versions"
 }
 
 create_migration () {
