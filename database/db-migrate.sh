@@ -5,11 +5,12 @@ usage() {
     echo ""
     echo "COMMANDS:"
     echo "create <name> - create new migration script with given <name>"
-    echo "goto <ver> - migrate the database to version <ver>"
-    echo "up <x> - migrate the database up <x> versions or dont use for migration to most recent version"
-    echo "down <x> - migrate the database down <x> versions or use -all for revert all changes"
+    echo "update - update the database to the most recent version"
     echo "drop - drop whole database schema"
     echo "version - print the current version of database"
+    echo "goto <ver> - migrate the database to version <ver>"
+    echo "up <x> - migrate the database up <x> versions"
+    echo "down <x> - migrate the database down <x> versions or use -all for revert all changes"
 }
 
 create_migration () {
@@ -47,6 +48,12 @@ drop_db () {
     -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' drop
 }
 
+update_db () {
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    --network host migrate/migrate -path=/migrations/ \
+    -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' up
+}
+
 case "$1" in
     create)
         if [ -n "$2" ]; then
@@ -63,7 +70,11 @@ case "$1" in
         fi
         ;;
     up)
-        up_version "$2"
+        if [ -n "$2" ]; then
+          up_version "$2"
+        else
+          usage
+        fi
         ;;
     down)
         if [ -n "$2" ]; then
@@ -72,6 +83,9 @@ case "$1" in
           usage
         fi
         ;;
+    update)
+      update_db
+      ;;
     drop)
       drop_db
       ;;
