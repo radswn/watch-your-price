@@ -8,6 +8,7 @@ usage() {
     echo "goto <ver> - migrate the database to version <ver>"
     echo "up <x> - migrate the database up <x> versions or dont use for migration to most recent version"
     echo "down <x> - migrate the database down <x> versions or use -all for revert all changes"
+    echo "drop - drop whole database schema"
     echo "version - print the current version of database"
 }
 
@@ -40,6 +41,12 @@ print_version () {
     -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' version
 }
 
+drop_db () {
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    --network host migrate/migrate -path=/migrations/ \
+    -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' drop
+}
+
 case "$1" in
     create)
         if [ -n "$2" ]; then
@@ -65,6 +72,9 @@ case "$1" in
           usage
         fi
         ;;
+    drop)
+      drop_db
+      ;;
     version)
          print_version
         ;;
