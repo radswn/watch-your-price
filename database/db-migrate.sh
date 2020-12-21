@@ -12,23 +12,32 @@ usage() {
 }
 
 create_migration () {
-    docker run -it --rm -v "$PWD"/migrations:/migrations migrate/migrate create -ext sql -dir /migrations -seq "$1"
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    migrate/migrate create -ext sql -dir /migrations -seq "$1"
 }
 
 goto_version () {
-    docker run -it --rm -v "$PWD"/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' goto "$1"
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    --network host migrate/migrate -path=/migrations/ \
+    -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' goto "$1"
 }
 
 up_version () {
-    docker run -it --rm -v "$PWD"/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' up "$1"
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    --network host migrate/migrate -path=/migrations/ \
+    -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' up "$1"
 }
 
 down_version () {
-    docker run -it --rm -v "$PWD"/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' down "$1"
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    --network host migrate/migrate -path=/migrations/ \
+    -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' down "$1"
 }
 
 print_version () {
-    docker run -it --rm -v "$PWD"/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' version
+    docker run -it --rm -v "$PWD"/migrations:/migrations \
+    --network host migrate/migrate -path=/migrations/ \
+    -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' version
 }
 
 case "$1" in
