@@ -6,8 +6,8 @@ usage() {
     echo "COMMANDS:"
     echo "create <name> - create new migration script with given <name>"
     echo "goto <ver> - migrate the database to version <ver>"
-    echo "up <x> - migrate the database up <x> versions"
-    echo "down <x> - migrate the database down <x> versions"
+    echo "up <x> - migrate the database up <x> versions or dont use for migration to most recent version"
+    echo "down <x> - migrate the database down <x> versions or use -all for revert all changes"
     echo "version - print the current version of database"
 }
 
@@ -56,11 +56,7 @@ case "$1" in
         fi
         ;;
     up)
-        if [ -n "$2" ]; then
-          up_version "$2"
-        else
-          usage
-        fi
+        up_version "$2"
         ;;
     down)
         if [ -n "$2" ]; then
