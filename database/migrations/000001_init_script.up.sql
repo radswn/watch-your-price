@@ -10,7 +10,6 @@ CREATE TABLE Products
 (
     product_id   int          NOT NULL AUTO_INCREMENT,
     name         varchar(100) NOT NULL,
-    lowest_price int          NOT NULL,
     PRIMARY KEY (product_id)
 );
 
