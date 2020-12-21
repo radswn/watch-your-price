@@ -8,6 +8,7 @@ usage() {
     echo "goto <ver> - migrate the database to version <ver>"
     echo "up <x> - migrate the database up <x> versions"
     echo "down <x> - migrate the database down <x> versions"
+    echo "version - print the current version of database"
 }
 
 create_migration () {
@@ -24,6 +25,10 @@ up_version () {
 
 down_version () {
     docker run -it --rm -v "$PWD"/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' down "$1"
+}
+
+print_version () {
+    docker run -it --rm -v "$PWD"/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database 'mysql://sa:!QAZxsw2@tcp(localhost:3306)/mydb' version
 }
 
 case "$1" in
@@ -54,6 +59,9 @@ case "$1" in
         else
           usage
         fi
+        ;;
+    version)
+         print_version
         ;;
     *)
         usage
