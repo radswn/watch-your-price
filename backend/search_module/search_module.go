@@ -35,7 +35,7 @@ type SearchModule struct {
 // New returns new instance of SearchModule with provided websites
 func New(websites map[website_type.WebsiteType]WebsiteSearch) (*SearchModule, error) {
 	if len(websites) == 0 {
-		return nil, errors.New("Search module should have at least one website")
+		return nil, errors.New("search module should have at least one website")
 	}
 	search := &SearchModule{websites: websites}
 	return search, nil

@@ -74,7 +74,7 @@ func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) 
 
 	expectedPhrase := "test"
 	expectedPage := 3
-	excpectedResults := map[string]string{
+	expectedResults := map[string]string{
 		"result1": "example.com/1",
 		"result2": "example.com/2",
 		"result3": "example.com/3",
@@ -86,5 +86,5 @@ func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedPhrase, result.Phrase)
 	assert.Equal(t, expectedPage, result.Page)
-	assert.Equal(t, excpectedResults, result.Results)
+	assert.Equal(t, expectedResults, result.Results)
 }
