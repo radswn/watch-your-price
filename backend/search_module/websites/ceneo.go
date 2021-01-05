@@ -4,6 +4,7 @@ import (
 	"backend/search_module"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,7 +24,7 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	searchResult.NumOfPages = page + 1 //TODO implement num of pages checking
 	results := make(map[string]string)
 
-	url := "https://www.ceneo.pl/;szukaj-" + phrase
+	url := "https://www.ceneo.pl/;szukaj-" + phrase + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.ceneo.pl"),
