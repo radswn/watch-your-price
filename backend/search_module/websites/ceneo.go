@@ -36,7 +36,7 @@ func newCeneoSearch() *ceneoSearch {
 
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
-	url := createSearchUrl(cs.baseUrl, phrase, page)
+	url := cs.createSearchUrl(phrase, page)
 
 	result, err := cs.search(url, phrase, page)
 	if err != nil {
@@ -47,8 +47,8 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	return result, nil
 }
 
-func createSearchUrl(baseUrl string, phrase string, page int) string {
-	url := strings.Join([]string{baseUrl, phrase}, "")
+func (cs *ceneoSearch) createSearchUrl(phrase string, page int) string {
+	url := strings.Join([]string{cs.baseUrl, phrase}, "")
 
 	if page > 0 {
 		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
