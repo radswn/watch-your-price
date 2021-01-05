@@ -18,7 +18,7 @@ type SearchResult struct {
 // SearchRequest represent query to the specific website search
 type SearchRequest struct {
 	Phrase  string                   `json:"phrase" binding:"required"`
-	Page    int                      `json:"page" binding:"required"`
+	Page    int                      `json:"page"`
 	Website website_type.WebsiteType `json:"website" binding:"required"`
 }
 
