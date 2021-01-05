@@ -32,7 +32,7 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 
 	q, _ := queue.New(
 		4,
-		&queue.InMemoryQueueStorage{MaxSize: 10000},
+		&queue.InMemoryQueueStorage{MaxSize: 100},
 	)
 
 	addLimitToCollector(c)
