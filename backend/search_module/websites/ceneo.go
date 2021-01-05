@@ -12,12 +12,6 @@ import (
 type ceneoSearch struct {
 }
 
-// New returns new instance of SearchModule with provided websites
-func New() (*ceneoSearch, error) {
-	search := &ceneoSearch{}
-	return search, nil
-}
-
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
 	searchResult := search_module.SearchResult{Phrase: phrase, Page: page}
