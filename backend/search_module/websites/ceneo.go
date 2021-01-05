@@ -18,25 +18,33 @@ type ceneoSearch struct {
 
 const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
 
+func createQueue() (*queue.Queue, error) {
+	q, err := queue.New(
+		4,
+		&queue.InMemoryQueueStorage{MaxSize: 100},
+	)
+	if err != nil {
+		logrus.WithError(err).Error("can not create ceneo queue")
+		return nil, err
+	}
+	return q, nil
+}
+
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
 	url := createSearchUrl(phrase, page)
 
-	c := colly.NewCollector(
-		colly.AllowedDomains("www.ceneo.pl"),
-	)
-
-	err := addLimitToCollector(c)
-	if err != nil {
-		logrus.WithError(err).Error("could not limit collector")
-		return search_module.SearchResult{}, err
+	result := search_module.SearchResult{
+		Phrase:  phrase,
+		Page:    page,
+		Results: make(map[string]string),
 	}
 
-	var maxPages int
-	checkPageNumber(c, &maxPages)
-
-	results := make(map[string]string)
-	handleItems(c, results)
+	c, err := createCollector(&result)
+	if err != nil {
+		logrus.WithError(err).Error("can't create collector")
+		return search_module.SearchResult{}, err
+	}
 
 	err = cs.queue.AddURL(url)
 	if err != nil {
@@ -51,34 +59,23 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 
 	c.Wait()
 
-	return search_module.SearchResult{
-		Phrase:     phrase,
-		Page:       page,
-		NumOfPages: maxPages,
-		Results:    results,
-	}, nil
+	return result, nil
 }
 
-func createQueue() (*queue.Queue, error) {
-	q, err := queue.New(
-		4,
-		&queue.InMemoryQueueStorage{MaxSize: 100},
+func createCollector(result *search_module.SearchResult) (*colly.Collector, error) {
+	c := colly.NewCollector(
+		colly.AllowedDomains("www.ceneo.pl"),
 	)
+
+	err := addLimitToCollector(c)
 	if err != nil {
-		logrus.WithError(err).Error("can not create ceneo queue")
+		logrus.WithError(err).Error("could not limit collector")
 		return nil, err
 	}
-	return q, nil
-}
+	checkPageNumber(c, &result.NumOfPages)
 
-func createSearchUrl(phrase string, page int) string {
-	url := strings.Join([]string{ceneoUrl, phrase}, "")
-
-	if page > 0 {
-		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
-	}
-
-	return url
+	handleItems(c, result.Results)
+	return c, nil
 }
 
 func addLimitToCollector(collector *colly.Collector) error {
@@ -99,6 +96,16 @@ func checkPageNumber(collector *colly.Collector, numOfPages *int) {
 		}
 		*numOfPages = number
 	})
+}
+
+func createSearchUrl(phrase string, page int) string {
+	url := strings.Join([]string{ceneoUrl, phrase}, "")
+
+	if page > 0 {
+		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
+	}
+
+	return url
 }
 
 type itemElement interface {
