@@ -21,7 +21,6 @@ func New() (*ceneoSearch, error) {
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
 	searchResult := search_module.SearchResult{Phrase: phrase, Page: page}
-	searchResult.NumOfPages = page + 1 //TODO implement num of pages checking
 	results := make(map[string]string)
 
 	url := "https://www.ceneo.pl/;szukaj-" + phrase + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
@@ -37,6 +36,9 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 
 	addLimitToCollector(c)
 
+	var maxPages int
+	checkPageNumber(c, &maxPages)
+
 	handleItemsOnGridView(c, results)
 
 	handleItemsOnListView(c, results)
@@ -46,6 +48,7 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 
 	c.Wait()
 	searchResult.Results = results
+	searchResult.NumOfPages = maxPages
 	return searchResult, nil
 }
 
@@ -54,6 +57,16 @@ func addLimitToCollector(collector *colly.Collector) {
 		DomainGlob:  "www.ceneo.pl/*",
 		Delay:       3 * time.Second,
 		RandomDelay: 1 * time.Second,
+	})
+}
+
+func checkPageNumber(collector *colly.Collector, numOfPages *int) {
+	collector.OnHTML("#page-counter", func(h *colly.HTMLElement) {
+		number, err := strconv.Atoi(h.Attr("data-pagecount"))
+		if err != nil {
+			number = 0
+		}
+		*numOfPages = number
 	})
 }
 
