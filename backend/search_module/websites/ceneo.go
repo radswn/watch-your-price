@@ -17,11 +17,7 @@ const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
 	results := make(map[string]string)
-	url := strings.Join([]string{ceneoUrl, phrase}, "")
-	if page > 0 {
-		url = url + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
-		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
-	}
+	url := createSearchUrl(phrase, page)
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.ceneo.pl"),
@@ -51,6 +47,15 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 		NumOfPages: maxPages,
 		Results:    results,
 	}, nil
+}
+
+func createSearchUrl(phrase string, page int) string {
+	url := strings.Join([]string{ceneoUrl, phrase}, "")
+	if page > 0 {
+		url = url + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
+		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
+	}
+	return url
 }
 
 func addLimitToCollector(collector *colly.Collector) {
