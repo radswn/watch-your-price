@@ -94,7 +94,7 @@ func checkPageNumber(collector *colly.Collector, numOfPages *int) {
 }
 
 type itemElement interface {
-	getName() string
+	getName() (string, error)
 	getLink() (string, error)
 	linkToAnotherShop() bool
 }
@@ -112,7 +112,11 @@ func handleItems(collector *colly.Collector, results map[string]string) {
 		if item.linkToAnotherShop() {
 			return
 		}
-		name := item.getName()
+		name, err := item.getName()
+		if err != nil {
+			logrus.WithError(err).Warn("could not find name")
+			return
+		}
 		link, err := item.getLink()
 		if err != nil {
 			logrus.WithError(err).Warn("could not find link for " + name)
@@ -130,16 +134,19 @@ type gridItem struct {
 	htmlElement *colly.HTMLElement
 }
 
-func (gi gridItem) getName() string {
+func (gi gridItem) getName() (string, error) {
 	name := gi.getLinkTag().SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
 	name = strings.TrimSpace(name)
-	return name
+	if strings.EqualFold("", name) {
+		return "", errors.New("name attribute does not exist")
+	}
+	return name, nil
 }
 
 func (gi gridItem) getLink() (string, error) {
 	relativeLink, exists := gi.getLinkTag().Attr("href")
 	if !exists {
-		return "", errors.New("href attribute not exists")
+		return "", errors.New("href attribute does not exist")
 	}
 	link := gi.htmlElement.Request.AbsoluteURL(relativeLink)
 	return link, nil
@@ -157,9 +164,12 @@ type listItem struct {
 	htmlElement *colly.HTMLElement
 }
 
-func (li listItem) getName() string {
+func (li listItem) getName() (string, error) {
 	name := strings.TrimSpace(li.getLinkTag().Text())
-	return name
+	if strings.EqualFold("", name) {
+		return "", errors.New("name attribute does not exist")
+	}
+	return name, nil
 }
 
 func (li listItem) getLink() (string, error) {
