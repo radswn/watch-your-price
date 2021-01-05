@@ -2,6 +2,8 @@ package websites
 
 import (
 	"backend/search_module"
+	"errors"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 	"github.com/sirupsen/logrus"
@@ -38,8 +40,7 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	checkPageNumber(c, &maxPages)
 
 	results := make(map[string]string)
-	handleItemsOnGridView(c, results)
-	handleItemsOnListView(c, results)
+	handleItems(c, results)
 
 	err = q.AddURL(url)
 	if err != nil {
@@ -92,27 +93,88 @@ func checkPageNumber(collector *colly.Collector, numOfPages *int) {
 	})
 }
 
-func handleItemsOnGridView(collector *colly.Collector, results map[string]string) {
-	collector.OnHTML("div.grid-row", func(h *colly.HTMLElement) {
-		linkTag := h.DOM.Find("a").First()
-		if linkTag.HasClass("go-to-shop") {
+type itemElement interface {
+	getName() string
+	getLink() (string, error)
+	linkToAnotherShop() bool
+}
+
+func handleItems(collector *colly.Collector, results map[string]string) {
+	collector.OnHTML("strong.cat-prod-row__name, div.grid-row", func(h *colly.HTMLElement) {
+
+		var item itemElement
+		if isGridView(h) {
+			item = gridItem{htmlElement: h}
+		} else {
+			item = listItem{htmlElement: h}
+		}
+
+		if item.linkToAnotherShop() {
 			return
 		}
-		relativeLink, _ := linkTag.Attr("href")
-		link := h.Request.AbsoluteURL(relativeLink)
-		name := linkTag.SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
-		results[strings.TrimSpace(name)] = link
+		name := item.getName()
+		link, err := item.getLink()
+		if err != nil {
+			logrus.WithError(err).Warn("could not find link for " + name)
+			return
+		}
+		results[name] = link
 	})
 }
 
-func handleItemsOnListView(collector *colly.Collector, results map[string]string) {
-	collector.OnHTML("strong.cat-prod-row__name", func(h *colly.HTMLElement) {
-		linkTag := h.DOM.Find("a").First()
-		if linkTag.HasClass("go-to-shop") {
-			return
-		}
-		relativeLink, _ := linkTag.Attr("href")
-		link := h.Request.AbsoluteURL(relativeLink)
-		results[strings.TrimSpace(linkTag.Text())] = link
-	})
+func isGridView(h *colly.HTMLElement) bool {
+	return strings.EqualFold(h.Name, "div")
+}
+
+type gridItem struct {
+	htmlElement *colly.HTMLElement
+}
+
+func (gi gridItem) getName() string {
+	name := gi.getLinkTag().SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
+	name = strings.TrimSpace(name)
+	return name
+}
+
+func (gi gridItem) getLink() (string, error) {
+	relativeLink, exists := gi.getLinkTag().Attr("href")
+	if !exists {
+		return "", errors.New("href attribute not exists")
+	}
+	link := gi.htmlElement.Request.AbsoluteURL(relativeLink)
+	return link, nil
+}
+
+func (gi gridItem) getLinkTag() *goquery.Selection {
+	return gi.htmlElement.DOM.Find("a").First()
+}
+
+func (gi gridItem) linkToAnotherShop() bool {
+	return gi.getLinkTag().HasClass("go-to-shop")
+}
+
+type listItem struct {
+	htmlElement *colly.HTMLElement
+}
+
+func (li listItem) getName() string {
+	name := strings.TrimSpace(li.getLinkTag().Text())
+	return name
+}
+
+func (li listItem) getLink() (string, error) {
+	relativeLink, exists := li.getLinkTag().Attr("href")
+	if !exists {
+		return "", errors.New("href attribute not exists")
+	}
+	link := li.htmlElement.Request.AbsoluteURL(relativeLink)
+	return link, nil
+}
+
+func (li listItem) getLinkTag() *goquery.Selection {
+	return li.htmlElement.DOM.Find("a").First()
+}
+
+func (li listItem) linkToAnotherShop() bool {
+	return li.getLinkTag().HasClass("go-to-shop")
 }
