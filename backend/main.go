@@ -3,6 +3,7 @@ package main
 import (
 	"backend/search_module"
 	"backend/search_module/website_type"
+	"backend/search_module/websites"
 	"fmt"
 	"net/http"
 	"os"
@@ -122,8 +123,9 @@ func (tws testWebsiteSearch) GetResults(phrase string, page int) (search_module.
 }
 
 func setupSearchModule() *search_module.SearchModule {
+	ceneoSearch := websites.New(website_type.Ceneo)
 	searchModule, err := search_module.New(map[website_type.WebsiteType]search_module.WebsiteSearch{
-		website_type.Ceneo: testWebsiteSearch{},
+		website_type.Ceneo: ceneoSearch,
 	})
 	if err != nil {
 		logrus.WithError(err).Panic("Can't initialize search module.")
