@@ -104,7 +104,10 @@ func setupRouter() *gin.Engine {
 }
 
 func setupSearchModule() *search_module.SearchModule {
-	ceneoSearch := websites.New(website_type.Ceneo)
+	ceneoSearch, err := websites.New(website_type.Ceneo)
+	if err != nil {
+		logrus.WithError(err).Fatal("can't initialize ceneo module.")
+	}
 	searchModule, err := search_module.New(map[website_type.WebsiteType]search_module.WebsiteSearch{
 		website_type.Ceneo: ceneoSearch,
 	})

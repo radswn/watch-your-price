@@ -13,6 +13,7 @@ import (
 )
 
 type ceneoSearch struct {
+	queue *queue.Queue
 }
 
 const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
@@ -23,11 +24,6 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.ceneo.pl"),
-	)
-
-	q, _ := queue.New(
-		4,
-		&queue.InMemoryQueueStorage{MaxSize: 100},
 	)
 
 	err := addLimitToCollector(c)
@@ -42,12 +38,12 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	results := make(map[string]string)
 	handleItems(c, results)
 
-	err = q.AddURL(url)
+	err = cs.queue.AddURL(url)
 	if err != nil {
 		logrus.WithError(err).Error("error while adding url to search queue")
 		return search_module.SearchResult{}, err
 	}
-	err = q.Run(c)
+	err = cs.queue.Run(c)
 	if err != nil {
 		logrus.WithError(err).Error("error while running collector")
 		return search_module.SearchResult{}, err
@@ -61,6 +57,18 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 		NumOfPages: maxPages,
 		Results:    results,
 	}, nil
+}
+
+func createQueue() (*queue.Queue, error) {
+	q, err := queue.New(
+		4,
+		&queue.InMemoryQueueStorage{MaxSize: 100},
+	)
+	if err != nil {
+		logrus.WithError(err).Error("can not create ceneo queue")
+		return nil, err
+	}
+	return q, nil
 }
 
 func createSearchUrl(phrase string, page int) string {
