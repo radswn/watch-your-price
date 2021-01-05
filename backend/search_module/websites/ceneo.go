@@ -13,27 +13,24 @@ import (
 )
 
 type ceneoSearch struct {
-	queue *queue.Queue
 }
 
 const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
-
-func createQueue() (*queue.Queue, error) {
-	q, err := queue.New(
-		4,
-		&queue.InMemoryQueueStorage{MaxSize: 100},
-	)
-	if err != nil {
-		logrus.WithError(err).Error("can not create ceneo queue")
-		return nil, err
-	}
-	return q, nil
-}
 
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
 	url := createSearchUrl(phrase, page)
 
+	result, err := search(url, phrase, page)
+	if err != nil {
+		logrus.WithError(err).Error("can't process search request")
+		return search_module.SearchResult{}, err
+	}
+
+	return result, nil
+}
+
+func search(url string, phrase string, page int) (search_module.SearchResult, error) {
 	result := search_module.SearchResult{
 		Phrase:  phrase,
 		Page:    page,
@@ -46,12 +43,18 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 		return search_module.SearchResult{}, err
 	}
 
-	err = cs.queue.AddURL(url)
+	q, err := createQueue()
+	if err != nil {
+		logrus.WithError(err).Error("cannot create queue for ceneo")
+		return search_module.SearchResult{}, err
+	}
+
+	err = q.AddURL(url)
 	if err != nil {
 		logrus.WithError(err).Error("error while adding url to search queue")
 		return search_module.SearchResult{}, err
 	}
-	err = cs.queue.Run(c)
+	err = q.Run(c)
 	if err != nil {
 		logrus.WithError(err).Error("error while running collector")
 		return search_module.SearchResult{}, err
@@ -76,6 +79,18 @@ func createCollector(result *search_module.SearchResult) (*colly.Collector, erro
 
 	handleItems(c, result.Results)
 	return c, nil
+}
+
+func createQueue() (*queue.Queue, error) {
+	q, err := queue.New(
+		4,
+		&queue.InMemoryQueueStorage{MaxSize: 100},
+	)
+	if err != nil {
+		logrus.WithError(err).Error("can not create ceneo queue")
+		return nil, err
+	}
+	return q, nil
 }
 
 func addLimitToCollector(collector *colly.Collector) error {
