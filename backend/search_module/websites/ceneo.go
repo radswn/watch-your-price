@@ -16,7 +16,6 @@ const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
 
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
-	results := make(map[string]string)
 	url := createSearchUrl(phrase, page)
 
 	c := colly.NewCollector(
@@ -33,14 +32,15 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	var maxPages int
 	checkPageNumber(c, &maxPages)
 
+	results := make(map[string]string)
 	handleItemsOnGridView(c, results)
-
 	handleItemsOnListView(c, results)
 
 	q.AddURL(url)
 	q.Run(c)
 
 	c.Wait()
+
 	return search_module.SearchResult{
 		Phrase:     phrase,
 		Page:       page,
