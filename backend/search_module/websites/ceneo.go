@@ -4,6 +4,7 @@ import (
 	"backend/search_module"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"time"
@@ -27,7 +28,11 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 		&queue.InMemoryQueueStorage{MaxSize: 100},
 	)
 
-	addLimitToCollector(c)
+	err := addLimitToCollector(c)
+	if err != nil {
+		logrus.WithError(err).Error("could not limit collector")
+		return search_module.SearchResult{}, err
+	}
 
 	var maxPages int
 	checkPageNumber(c, &maxPages)
@@ -36,8 +41,16 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	handleItemsOnGridView(c, results)
 	handleItemsOnListView(c, results)
 
-	q.AddURL(url)
-	q.Run(c)
+	err = q.AddURL(url)
+	if err != nil {
+		logrus.WithError(err).Error("error while adding url to search queue")
+		return search_module.SearchResult{}, err
+	}
+	err = q.Run(c)
+	if err != nil {
+		logrus.WithError(err).Error("error while running collector")
+		return search_module.SearchResult{}, err
+	}
 
 	c.Wait()
 
@@ -58,18 +71,20 @@ func createSearchUrl(phrase string, page int) string {
 	return url
 }
 
-func addLimitToCollector(collector *colly.Collector) {
-	collector.Limit(&colly.LimitRule{
+func addLimitToCollector(collector *colly.Collector) error {
+	err := collector.Limit(&colly.LimitRule{
 		DomainGlob:  "www.ceneo.pl/*",
 		Delay:       3 * time.Second,
 		RandomDelay: 1 * time.Second,
 	})
+	return err
 }
 
 func checkPageNumber(collector *colly.Collector, numOfPages *int) {
 	collector.OnHTML("#page-counter", func(h *colly.HTMLElement) {
 		number, err := strconv.Atoi(h.Attr("data-pagecount"))
 		if err != nil {
+			logrus.WithError(err).Warn("could not get number of pages")
 			number = 0
 		}
 		*numOfPages = number
