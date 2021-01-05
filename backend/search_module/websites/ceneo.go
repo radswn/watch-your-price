@@ -64,10 +64,11 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 
 func createSearchUrl(phrase string, page int) string {
 	url := strings.Join([]string{ceneoUrl, phrase}, "")
+
 	if page > 0 {
-		url = url + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
 		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
 	}
+
 	return url
 }
 
