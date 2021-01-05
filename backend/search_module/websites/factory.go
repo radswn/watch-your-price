@@ -10,7 +10,7 @@ func New(websiteType website_type.WebsiteType) search_module.WebsiteSearch {
 	var module search_module.WebsiteSearch
 	switch websiteType {
 	case website_type.Ceneo:
-		module = &ceneoSearch{}
+		module = newCeneoSearch()
 	}
 	return module
 }

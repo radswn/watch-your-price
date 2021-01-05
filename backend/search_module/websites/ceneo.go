@@ -13,15 +13,32 @@ import (
 )
 
 type ceneoSearch struct {
+	queueStorage int
+	queueThreads int
+	domain       string
+	domainGlob   string
+	baseUrl      string
+	delay        time.Duration
+	randomDelay  time.Duration
 }
 
-const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
+func newCeneoSearch() *ceneoSearch {
+	return &ceneoSearch{
+		queueStorage: 100,
+		queueThreads: 4,
+		domain:       "www.ceneo.pl",
+		domainGlob:   "www.ceneo.pl/*",
+		baseUrl:      "https://www.ceneo.pl/;szukaj-",
+		delay:        3 * time.Second,
+		randomDelay:  1 * time.Second,
+	}
+}
 
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
-	url := createSearchUrl(phrase, page)
+	url := createSearchUrl(cs.baseUrl, phrase, page)
 
-	result, err := search(url, phrase, page)
+	result, err := cs.search(url, phrase, page)
 	if err != nil {
 		logrus.WithError(err).Error("can't process search request")
 		return search_module.SearchResult{}, err
@@ -30,20 +47,30 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	return result, nil
 }
 
-func search(url string, phrase string, page int) (search_module.SearchResult, error) {
+func createSearchUrl(baseUrl string, phrase string, page int) string {
+	url := strings.Join([]string{baseUrl, phrase}, "")
+
+	if page > 0 {
+		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
+	}
+
+	return url
+}
+
+func (cs *ceneoSearch) search(url string, phrase string, page int) (search_module.SearchResult, error) {
 	result := search_module.SearchResult{
 		Phrase:  phrase,
 		Page:    page,
 		Results: make(map[string]string),
 	}
 
-	c, err := createCollector(&result)
+	c, err := cs.createCollector(&result)
 	if err != nil {
 		logrus.WithError(err).Error("can't create collector")
 		return search_module.SearchResult{}, err
 	}
 
-	q, err := createQueue()
+	q, err := cs.createQueue()
 	if err != nil {
 		logrus.WithError(err).Error("cannot create queue for ceneo")
 		return search_module.SearchResult{}, err
@@ -54,6 +81,7 @@ func search(url string, phrase string, page int) (search_module.SearchResult, er
 		logrus.WithError(err).Error("error while adding url to search queue")
 		return search_module.SearchResult{}, err
 	}
+
 	err = q.Run(c)
 	if err != nil {
 		logrus.WithError(err).Error("error while running collector")
@@ -65,39 +93,43 @@ func search(url string, phrase string, page int) (search_module.SearchResult, er
 	return result, nil
 }
 
-func createCollector(result *search_module.SearchResult) (*colly.Collector, error) {
+func (cs *ceneoSearch) createCollector(result *search_module.SearchResult) (*colly.Collector, error) {
 	c := colly.NewCollector(
-		colly.AllowedDomains("www.ceneo.pl"),
+		colly.AllowedDomains(cs.domain),
 	)
 
-	err := addLimitToCollector(c)
+	err := cs.addLimitToCollector(c)
 	if err != nil {
 		logrus.WithError(err).Error("could not limit collector")
 		return nil, err
 	}
+
 	checkPageNumber(c, &result.NumOfPages)
 
 	handleItems(c, result.Results)
+
 	return c, nil
 }
 
-func createQueue() (*queue.Queue, error) {
+func (cs *ceneoSearch) createQueue() (*queue.Queue, error) {
 	q, err := queue.New(
-		4,
-		&queue.InMemoryQueueStorage{MaxSize: 100},
+		cs.queueThreads,
+		&queue.InMemoryQueueStorage{MaxSize: cs.queueStorage},
 	)
+
 	if err != nil {
 		logrus.WithError(err).Error("can not create ceneo queue")
 		return nil, err
 	}
+
 	return q, nil
 }
 
-func addLimitToCollector(collector *colly.Collector) error {
+func (cs *ceneoSearch) addLimitToCollector(collector *colly.Collector) error {
 	err := collector.Limit(&colly.LimitRule{
-		DomainGlob:  "www.ceneo.pl/*",
-		Delay:       3 * time.Second,
-		RandomDelay: 1 * time.Second,
+		DomainGlob:  cs.domainGlob,
+		Delay:       cs.delay,
+		RandomDelay: cs.randomDelay,
 	})
 	return err
 }
@@ -111,16 +143,6 @@ func checkPageNumber(collector *colly.Collector, numOfPages *int) {
 		}
 		*numOfPages = number
 	})
-}
-
-func createSearchUrl(phrase string, page int) string {
-	url := strings.Join([]string{ceneoUrl, phrase}, "")
-
-	if page > 0 {
-		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
-	}
-
-	return url
 }
 
 type itemElement interface {
