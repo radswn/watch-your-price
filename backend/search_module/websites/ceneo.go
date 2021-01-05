@@ -12,12 +12,16 @@ import (
 type ceneoSearch struct {
 }
 
+const ceneoUrl = "https://www.ceneo.pl/;szukaj-"
+
 func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
 
-	searchResult := search_module.SearchResult{Phrase: phrase, Page: page}
 	results := make(map[string]string)
-
-	url := "https://www.ceneo.pl/;szukaj-" + phrase + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
+	url := strings.Join([]string{ceneoUrl, phrase}, "")
+	if page > 0 {
+		url = url + ";0020-30-0-0-" + strconv.Itoa(page) + ".htm"
+		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
+	}
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.ceneo.pl"),
@@ -41,9 +45,12 @@ func (cs *ceneoSearch) GetResults(phrase string, page int) (search_module.Search
 	q.Run(c)
 
 	c.Wait()
-	searchResult.Results = results
-	searchResult.NumOfPages = maxPages
-	return searchResult, nil
+	return search_module.SearchResult{
+		Phrase:     phrase,
+		Page:       page,
+		NumOfPages: maxPages,
+		Results:    results,
+	}, nil
 }
 
 func addLimitToCollector(collector *colly.Collector) {
