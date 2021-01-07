@@ -51,8 +51,10 @@ func (cs *ceneoSearch) createSearchUrl(phrase string, page int) string {
 	url := strings.Join([]string{cs.baseUrl, phrase}, "")
 
 	if page > 0 {
-		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page), ".htm"}, "")
+		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page)}, "")
 	}
+
+	url = strings.Join([]string{url, ".htm?nocatnarrow=1"}, "")
 
 	return url
 }
