@@ -1,1 +1,5 @@
 package websites
+
+const list_view_html = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>test_list</title>\n</head>\n<body>\n<strong class=\"cat-prod-row__name\"><a href=\"/121\">Product 1</a></strong>\n<strong class=\"cat-prod-row__name\"><a href=\"/122\" class=\"go-to-shop\">Product 2</a></strong>\n<strong class=\"cat-prod-row__name\"><a href=\"/123\">Product 3</a></strong>\n</body>\n</html>\n"
+
+const grid_view_html = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>test_grid</title>\n</head>\n<body>\n<div class=\"grid-row\">\n    <a href=\"/121\"></a>\n    <div class=\"grid-item__caption\">\n        <strong class=\"grid_item__name\">Product 1</strong>\n    </div>\n</div>\n<div class=\"grid-row\">\n    <a href=\"/122\" class=\"go-to-shop\"></a>\n    <div class=\"grid-item__caption\">\n        <strong class=\"grid_item__name\">Product 2</strong>\n    </div>\n</div>\n<div class=\"grid-row\">\n    <a href=\"/123\"></a>\n    <div class=\"grid-item__caption\">\n        <strong class=\"grid_item__name\">Product 3</strong>\n    </div>\n</div>\n</body>\n</html>"
