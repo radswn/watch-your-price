@@ -189,7 +189,7 @@ type gridItem struct {
 }
 
 func (gi gridItem) getName() (string, error) {
-	name := gi.getLinkTag().SiblingsFiltered("div.grid-item__caption").Find("Strong").First().Text()
+	name := gi.getLinkTag().SiblingsFiltered("div.grid-item__caption").Find("strong").First().Text()
 	name = strings.TrimSpace(name)
 	if strings.EqualFold("", name) {
 		return "", errors.New("name attribute does not exist")
