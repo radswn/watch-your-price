@@ -59,3 +59,47 @@ func removePort(domain string) string {
 func TestRunTestSuite(t *testing.T) {
 	suite.Run(t, new(ceneoTestSuite))
 }
+
+func (suite *ceneoTestSuite) TestShouldReturnURLWithoutPageWhenPageIsZero() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldReturnURLWithPageInformationWhenPageIsMoreThanZero() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldHaveGivenPhraseAndPageInResult() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldReturnAnyResultsInListView() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldReturnAnyResultsInGridView() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldOmitAnyProductThatLinksToExternalPageInListView() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldOmitAnyProductThatLinksToExternalPageInGridView() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestLinksInResultShouldLinkToCeneo() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldReadMaxNumOfPages() {
+	suite.T().FailNow()
+}
+
+func (suite ceneoTestSuite) TestShouldDefaultMaxNumOfPagesToZeroWhenThereIsOnlyOnePage() {
+	suite.T().FailNow()
+}
+
+func (suite *ceneoTestSuite) TestShouldOmitResultsThatHaveNoLink() {
+	suite.T().FailNow()
+}
