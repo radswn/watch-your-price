@@ -32,17 +32,17 @@ func testServer() *httptest.Server {
 
 	mux.HandleFunc("/list", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		w.Write([]byte(listViewHtml))
+		_, _ = w.Write([]byte(listViewHtml))
 	})
 
 	mux.HandleFunc("/listWithoutPages", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		w.Write([]byte(listViewHtmlWithoutPage))
+		_, _ = w.Write([]byte(listViewHtmlWithoutPage))
 	})
 
 	mux.HandleFunc("/grid", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		w.Write([]byte(gridViewHtml))
+		_, _ = w.Write([]byte(gridViewHtml))
 	})
 	return httptest.NewServer(mux)
 }
