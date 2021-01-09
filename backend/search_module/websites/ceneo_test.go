@@ -1,9 +1,11 @@
 package websites
 
 import (
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -68,45 +70,81 @@ func TestRunTestSuite(t *testing.T) {
 }
 
 func (suite *ceneoTestSuite) TestShouldReturnURLWithoutPageWhenPageIsZero() {
-	suite.T().FailNow()
+	phrase := "Product"
+	page := 0
+	baseUrl := "www.abc.com/;search-"
+	ceneoSearch := &ceneoSearch{baseUrl: baseUrl}
+	url := ceneoSearch.createSearchUrl(phrase, page)
+
+	assert.Equal(suite.T(), "www.abc.com/;search-"+phrase+".htm?nocatnarrow=1", url)
 }
 
 func (suite *ceneoTestSuite) TestShouldReturnURLWithPageInformationWhenPageIsMoreThanZero() {
-	suite.T().FailNow()
+	phrase := "Product"
+	page := 3
+	baseUrl := "www.abc.com/;search-"
+	ceneoSearch := &ceneoSearch{baseUrl: baseUrl}
+	url := ceneoSearch.createSearchUrl(phrase, page)
+
+	assert.Equal(suite.T(), "www.abc.com/;search-"+phrase+";0020-30-0-0-"+strconv.Itoa(page)+".htm?nocatnarrow=1", url)
 }
 
 func (suite *ceneoTestSuite) TestShouldHaveGivenPhraseAndPageInResult() {
-	suite.T().FailNow()
+	phrase := "Product"
+	page := 3
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/list", phrase, page)
+
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), result.Phrase, phrase)
+	assert.Equal(suite.T(), result.Page, page)
 }
 
 func (suite *ceneoTestSuite) TestShouldReturnAnyResultsInListView() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/list", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.Greater(suite.T(), len(result.Results), 0)
 }
 
 func (suite *ceneoTestSuite) TestShouldReturnAnyResultsInGridView() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/grid", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.Greater(suite.T(), len(result.Results), 0)
 }
 
 func (suite *ceneoTestSuite) TestShouldOmitAnyProductThatLinksToExternalPageInListView() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/list", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.NotContains(suite.T(), result.Results, "Product outside")
 }
 
 func (suite *ceneoTestSuite) TestShouldOmitAnyProductThatLinksToExternalPageInGridView() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/grid", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.NotContains(suite.T(), result.Results, "Product outside")
 }
 
-func (suite *ceneoTestSuite) TestLinksInResultShouldLinkToCeneo() {
-	suite.T().FailNow()
+func (suite *ceneoTestSuite) TestLinksInResultShouldLinkToTheSameDomain() {
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/list", "", 0)
+	assert.Nil(suite.T(), err)
+	for _, link := range result.Results {
+		assert.True(suite.T(), strings.HasPrefix(link, "http://"+suite.ceneoSearch.domain))
+	}
 }
 
 func (suite *ceneoTestSuite) TestShouldReadMaxNumOfPages() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/list", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 824, result.NumOfPages)
 }
 
 func (suite ceneoTestSuite) TestShouldDefaultMaxNumOfPagesToZeroWhenThereIsOnlyOnePage() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/listWithoutPages", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 0, result.NumOfPages)
 }
 
 func (suite *ceneoTestSuite) TestShouldOmitResultsThatHaveNoLink() {
-	suite.T().FailNow()
+	result, err := suite.ceneoSearch.search(suite.server.URL+"/list", "", 0)
+	assert.Nil(suite.T(), err)
+	assert.NotContains(suite.T(), result.Results, "ProductWithoutLink")
 }
