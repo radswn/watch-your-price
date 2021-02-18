@@ -1,0 +1,42 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@import 'primereact/resources/themes/saga-blue/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';
+
+.p-button {
+  background-color: black !important;
+  color: white !important;
+  border-color: black !important;
+}
+
+.p-button:focus {
+  box-shadow: 0 0 0 0.2rem grey !important;
+}
+
+.p-button-inverse {
+  background-color: white !important;
+  color: black !important;
+  border-color: black !important;
+}
+
+.p-button-inverse:focus {
+  box-shadow: 0 0 0 0.2rem grey !important;
+}
