@@ -1,3 +1,18 @@
 .nav-color {
     background-color: black !important;
 }
+
+.header {
+    color: white;
+}
+
+.blur {
+    z-index: 99;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.movable-sidebar {
+    z-index: 100;
+}
