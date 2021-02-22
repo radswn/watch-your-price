@@ -5,7 +5,7 @@ type SidebarInfo = {
 
 export class SidebarAnimation {
     private sidebarFrames: {left}[] = [];
-    private blurFrames: {background}[] = [];
+    private blurFrames: {background, opacity}[] = [];
 
     constructor(
         public readonly sidebar: SidebarInfo, 
@@ -48,8 +48,13 @@ export class SidebarAnimation {
     private setOpaque(value: number) {
         if(this.blur) {
             //first number decreases difference between contrasts colors
-            const blurRatio = 6 * Math.floor(255 * value);
-            this.blurFrames.push({background: `rgb(${blurRatio}, ${blurRatio}, ${blurRatio})`});
+            const opacity = 1 - value;
+            const light = 8*value * 100;
+            
+            this.blurFrames.push({
+                background: `hsl(0, 0%, ${light}%)`, 
+                opacity
+            });
         }
     };
 

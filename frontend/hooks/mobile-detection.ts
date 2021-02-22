@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import { fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-type Inputs = {mobileMaxWidth: number};
-type Returns = {mobile: boolean|null}
-
-export function useMobileDetection(args: Inputs): Returns {
+export function useMobileDetection(mobileMaxWidth = 768): {mobile: boolean|null} {
     const [mobile, setMobile] = useState<boolean|null>(null);
-    const isMobile = window => window.screen.width <= args.mobileMaxWidth;
+    const isMobile = window => window.screen.width <= mobileMaxWidth;
     
     //check if mobile
     useEffect(() => {

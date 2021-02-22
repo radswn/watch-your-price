@@ -1,5 +1,5 @@
-
+import { Search } from 'components/search/search';
 
 export default function Page() {
-    return 'Hello';
+    return <Search></Search>;
 }

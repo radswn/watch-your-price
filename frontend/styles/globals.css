@@ -28,9 +28,9 @@ a {
   border-color: black !important;
 }
 
-.p-button:focus {
+/* .p-button:focus {
   box-shadow: 0 0 0 0.2rem grey !important;
-}
+} */
 
 .p-button-inverse {
   background-color: white !important;
@@ -38,6 +38,6 @@ a {
   border-color: black !important;
 }
 
-.p-button-inverse:focus {
+/* .p-button-inverse:focus {
   box-shadow: 0 0 0 0.2rem grey !important;
-}
+} */
