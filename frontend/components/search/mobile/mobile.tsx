@@ -1,6 +1,7 @@
+import { useEffectUpdate } from 'hooks/effects-lib';
 import { InputText } from 'primereact/inputtext';
 import { Toolbar } from 'primereact/toolbar';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from 'styles/search.module.css';
 
 type Args = {onChange: (string) => any};
@@ -16,7 +17,7 @@ export function MobileSearch(args: Args) {
         </span> 
     </>;
 
-    useEffect(() => args.onChange(value), [value])
+    useEffectUpdate(() => args.onChange(value), [value])
 
     return <>
         <Toolbar left={() => content} className={styles['mobile-toolbar']}/>

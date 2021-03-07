@@ -6,6 +6,24 @@
     width: 100%;
 }
 
+.desktop-search-wrapper {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
 .desktop-search {
     width: 100%;
+}
+
+.img img {
+    width: 100%;
+    height: 100%;
+}
+
+.grid_padding_bottom > *:first-child {
+    margin-top: 2.5%;
+}
+
+.grid_padding_bottom > * {
+    margin-bottom: 2.5%;
 }

@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react';
 import { fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { useEffectUpdate } from './effects-lib';
 
 type Inputs = {
     fadeInInitListenerWidth: number|null, 
     fadeInMaxWidth: number|null
 };
 
-type Returns = {
-    mousePos: number|null, 
-    rightMoveDirection: boolean|null,
-    moving: boolean|null
-};
-
-export function useMousePosition(args: Inputs): Returns {
+export function useMousePosition(args: Inputs) {
     type Position = {
         prev: number|null, 
         current: number|null
@@ -23,7 +18,7 @@ export function useMousePosition(args: Inputs): Returns {
     const [rightMoveDirection, setRightMoveDirection] = useState<boolean|null>(null);
     const [moving, setMoving] = useState<boolean|null>(null);
 
-    useEffect(() => {
+    useEffectUpdate(() => {
         let listen = false;
         let prev: number|null = null;
 
@@ -67,7 +62,7 @@ export function useMousePosition(args: Inputs): Returns {
     }, [args.fadeInMaxWidth]);
 
 
-    useEffect(() => {
+    useEffectUpdate(() => {
         const {current, prev} = mousePos;
         setRightMoveDirection(current! >= prev!);
     }, [mousePos]);

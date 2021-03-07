@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { useEffectInit } from './effects-lib';
 
-export function useMobileDetection(mobileMaxWidth = 768): {mobile: boolean|null} {
+export function useMobileDetection(mobileMaxWidth = 768) {
     const [mobile, setMobile] = useState<boolean|null>(null);
     const isMobile = window => window.screen.width <= mobileMaxWidth;
     
     //check if mobile
-    useEffect(() => {
+    useEffectInit(() => {
         setMobile(isMobile(window));
 
         const s = fromEvent(window, 'resize')
@@ -16,7 +17,7 @@ export function useMobileDetection(mobileMaxWidth = 768): {mobile: boolean|null}
         ).subscribe(window => setMobile(isMobile(window)));
 
         return () => s.unsubscribe()
-    }, []);
+    });
 
     return {mobile};
 }
