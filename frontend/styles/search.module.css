@@ -26,4 +26,16 @@
 
 .grid_padding_bottom > * {
     margin-bottom: 2.5%;
+    animation-name: scaleUp;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
 }
