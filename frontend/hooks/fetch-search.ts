@@ -9,7 +9,6 @@ export function useFetchSearch(text: string|null) {
     const [error, setError] = useState<Error|null>(null);
     
     useEffectUpdateNullish(() => {
-        console.log(text)
         fromFetch(`http://localhost:3000/api/search?item=${text}`)
         .pipe(
             mergeMap((r: Response) => r.json())

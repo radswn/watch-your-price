@@ -19,3 +19,15 @@ export function useEffectUpdateNullish(effect: EffectCallback, deps: DependencyL
         return effect();
     }, deps);
 }
+
+export function useEffectUpdateValue(effect: EffectCallback, deps: {dep: any, vals: any[]}[]) {
+    useEffect(() => {
+        for(const {dep, vals} of deps) {
+            if(!vals.some(v => dep === v)) {
+                return;
+            }
+        }
+
+        return effect();
+    }, deps.map(v => v.dep));
+}
