@@ -1,17 +1,19 @@
 import { SearchedObject } from 'api';
-import { useEffectInit, useEffectUpdateNullish } from 'hooks/effects-lib';
+import { useEffectInit } from 'hooks/effects-lib';
 import { useState } from 'react';
 import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { unpackImg } from './unpack-img';
-import { Button } from 'primereact/button';
+import { useMobileDetection } from 'hooks/mobile-detection';
+import { Desktop } from './desktop/desktop';
+import { Mobile } from './mobile/mobile';
 import styles from 'styles/search.module.css';
 
 type Args = { data: SearchedObject[] };
 
 export function ResultsGrid(args: Args) {
+    const { mobile } = useMobileDetection();
     const [preparedData, setPreparedData] = useState<SearchedObject[] | null>(null);
-    const [htmlGrid, setHtmlGrid] = useState<JSX.Element[] | null>(null);
 
     useEffectInit(() => {
         const dataObservables = args.data.map(v => {
@@ -24,37 +26,17 @@ export function ResultsGrid(args: Args) {
         combineLatest(dataObservables).subscribe(data => setPreparedData(data));
     });
 
-    useEffectUpdateNullish(() => {
-        const buttons = <>
-            <div>
-                <Button label="Obserwuj" aria-label="Obserwuj" className="p-mx-1"/>
-            </div>
-            <div>
-                <Button label="Zobacz" aria-label="Zobacz" className="p-mx-1"/>
-            </div>
-        </>;
+    if (preparedData) {
+        const datView = mobile ? <Mobile data={preparedData}></Mobile> : <Desktop data={preparedData}></Desktop>;
 
-        const grid = preparedData!.map((v, index) => {
-            return <div className="p-col p-grid p-shadow-6" key={index}>
-                <div dangerouslySetInnerHTML={{ __html: v.img }} className={`p-col-4 ${styles.img}`} />
-                <div className="p-col p-d-flex p-flex-column">
-                    <div className="p-mb-2">{v.title}</div>
-                    <div className="p-mb-2">{v.description}</div>
+        return <div className="grid">
+            <div className="p-offset-2 p-col-8">
+                <div className={`grid p-dir-col ${styles['grid_padding_bottom']}`}>
+                    {datView}
                 </div>
-                <div className="p-col p-d-flex p-align-end p-justify-even">
-                    {buttons}
-                </div>
-            </div>;
-        })
-
-        setHtmlGrid(grid);
-    }, [preparedData]);
-
-    return <div className="grid">
-        <div className="p-offset-2 p-col-8">
-            <div className={`grid p-dir-col ${styles['grid_padding_bottom']}`}>
-                {htmlGrid}
             </div>
-        </div>
-    </div>
+        </div>;
+    } else {
+        return null;
+    };
 }
