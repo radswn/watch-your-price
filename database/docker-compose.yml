@@ -1,0 +1,11 @@
+version: "3"
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: '!QAZxsw2'
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: sa
+      MYSQL_PASSWORD: '!QAZxsw2'
+    ports:
+      - "3306:3306"
