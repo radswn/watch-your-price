@@ -1,2 +1,8 @@
 /backend
+.idea/
+__pycache__/
+env/
+venv/
+
+db.sqlite3
 backend.log
