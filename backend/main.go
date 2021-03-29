@@ -3,6 +3,7 @@ package main
 import (
 	"backend/search_module"
 	"backend/search_module/website_type"
+	"backend/search_module/websites"
 	"fmt"
 	"net/http"
 	"os"
@@ -102,28 +103,10 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-// use this implementation of website search before I port ceneo module - Dawid
-type testWebsiteSearch struct {
-}
-
-func (tws testWebsiteSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
-	sr := search_module.SearchResult{
-		Phrase:     phrase,
-		Page:       page,
-		NumOfPages: 5,
-		Results: map[string]string{
-			"result1": "example.com/1",
-			"result2": "example.com/2",
-			"result3": "example.com/3",
-			"result4": "example.com/4",
-		},
-	}
-	return sr, nil
-}
-
 func setupSearchModule() *search_module.SearchModule {
+	ceneoSearch := websites.New(website_type.Ceneo)
 	searchModule, err := search_module.New(map[website_type.WebsiteType]search_module.WebsiteSearch{
-		website_type.Ceneo: testWebsiteSearch{},
+		website_type.Ceneo: ceneoSearch,
 	})
 	if err != nil {
 		logrus.WithError(err).Panic("Can't initialize search module.")
