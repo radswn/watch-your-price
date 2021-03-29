@@ -5,3 +5,4 @@ env/
 venv/
 
 db.sqlite3
+backend.log
