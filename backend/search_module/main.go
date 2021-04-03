@@ -15,41 +15,14 @@ import (
 	"strings"
 )
 
+var searchModule *search.Module
+
 func init() {
 	setupLogrus()
-	searchModule := setupSearchModule()
+	searchModule = setupSearchModule()
+
 	r := mux.NewRouter().StrictSlash(true)
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		queryParameters := r.URL.Query()
-		phraseQuery, ok := queryParameters["phrase"]
-		if !ok || len(phraseQuery) < 1 {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		phrase := phraseQuery[0]
-
-		websiteQuery, ok := queryParameters["website"]
-		if !ok || len(websiteQuery) < 1 {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		website, err := convertWebsite(websiteQuery[0])
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		var page int
-		pageQuery, ok := queryParameters["page"]
-		if ok && len(pageQuery) >= 1 {
-			page, _ = strconv.Atoi(pageQuery[0])
-		}
-
-		request := search.Request{Page: page, Phrase: phrase, Website: website}
-		result, _ := searchModule.Search(request)
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(result)
-	}).Methods("GET")
+	r.Handle("/", http.HandlerFunc(searchHandler)).Methods("GET")
 
 	logrus.Fatal(http.ListenAndServe(":8000", r))
 }
@@ -88,6 +61,38 @@ func setupSearchModule() *search.Module {
 		logrus.WithError(err).Panic("Can't initialize search module.")
 	}
 	return searchModule
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	queryParameters := r.URL.Query()
+	phraseQuery, ok := queryParameters["phrase"]
+	if !ok || len(phraseQuery) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	phrase := phraseQuery[0]
+
+	websiteQuery, ok := queryParameters["website"]
+	if !ok || len(websiteQuery) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	website, err := convertWebsite(websiteQuery[0])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var page int
+	pageQuery, ok := queryParameters["page"]
+	if ok && len(pageQuery) >= 1 {
+		page, _ = strconv.Atoi(pageQuery[0])
+	}
+
+	request := search.Request{Page: page, Phrase: phrase, Website: website}
+	result, _ := searchModule.Search(request)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(result)
 }
 
 func convertWebsite(s string) (website_type.WebsiteType, error) {
