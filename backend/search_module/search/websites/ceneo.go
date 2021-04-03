@@ -34,14 +34,14 @@ func newCeneoSearch() *ceneoSearch {
 	}
 }
 
-func (cs *ceneoSearch) GetResults(phrase string, page int) (search.SearchResult, error) {
+func (cs *ceneoSearch) GetResults(phrase string, page int) (search.Result, error) {
 
 	url := cs.createSearchUrl(phrase, page)
 
 	result, err := cs.search(url, phrase, page)
 	if err != nil {
 		logrus.WithError(err).Error("can't process search request")
-		return search.SearchResult{}, err
+		return search.Result{}, err
 	}
 
 	return result, nil
@@ -59,8 +59,8 @@ func (cs *ceneoSearch) createSearchUrl(phrase string, page int) string {
 	return url
 }
 
-func (cs *ceneoSearch) search(url string, phrase string, page int) (search.SearchResult, error) {
-	result := search.SearchResult{
+func (cs *ceneoSearch) search(url string, phrase string, page int) (search.Result, error) {
+	result := search.Result{
 		Phrase:  phrase,
 		Page:    page,
 		Results: make(map[string]string),
@@ -69,25 +69,25 @@ func (cs *ceneoSearch) search(url string, phrase string, page int) (search.Searc
 	c, err := cs.createCollector(&result)
 	if err != nil {
 		logrus.WithError(err).Error("can't create collector")
-		return search.SearchResult{}, err
+		return search.Result{}, err
 	}
 
 	q, err := cs.createQueue()
 	if err != nil {
 		logrus.WithError(err).Error("cannot create queue for ceneo")
-		return search.SearchResult{}, err
+		return search.Result{}, err
 	}
 
 	err = q.AddURL(url)
 	if err != nil {
 		logrus.WithError(err).Error("error while adding url to search queue")
-		return search.SearchResult{}, err
+		return search.Result{}, err
 	}
 
 	err = q.Run(c)
 	if err != nil {
 		logrus.WithError(err).Error("error while running collector")
-		return search.SearchResult{}, err
+		return search.Result{}, err
 	}
 
 	c.Wait()
@@ -95,7 +95,7 @@ func (cs *ceneoSearch) search(url string, phrase string, page int) (search.Searc
 	return result, nil
 }
 
-func (cs *ceneoSearch) createCollector(result *search.SearchResult) (*colly.Collector, error) {
+func (cs *ceneoSearch) createCollector(result *search.Result) (*colly.Collector, error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains(cs.domain),
 	)

@@ -17,8 +17,8 @@ func init() {
 type testWebsiteSearch struct {
 }
 
-func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.SearchResult, error) {
-	sr := search.SearchResult{
+func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.Result, error) {
+	sr := search.Result{
 		Phrase:     phrase,
 		Page:       page,
 		NumOfPages: 5,
@@ -66,7 +66,7 @@ func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) 
 	module, err := search.New(websiteSearchMap)
 	assert.Nil(t, err)
 
-	requestData := search.SearchRequest{
+	requestData := search.Request{
 		Phrase:  "test",
 		Page:    3,
 		Website: "ceneo",

@@ -43,7 +43,7 @@ func setupLogrus() {
 	logrus.SetReportCaller(true)
 }
 
-func setupSearchModule() *search.SearchModule {
+func setupSearchModule() *search.Module {
 	ceneoSearch := websites.New(website_type.Ceneo)
 	searchModule, err := search.New(map[website_type.WebsiteType]search.WebsiteSearch{
 		website_type.Ceneo: ceneoSearch,
