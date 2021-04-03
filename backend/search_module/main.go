@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -95,7 +96,14 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(result)
 }
 
-func convertWebsite(s string) (website_type.WebsiteType, error) {
-
-	return website_type.Ceneo, nil
+func convertWebsite(websiteStr string) (website_type.WebsiteType, error) {
+	var website website_type.WebsiteType
+	switch strings.ToLower(websiteStr) {
+	case "ceneo":
+		website = website_type.Ceneo
+		break
+	default:
+		return "", errors.New("unknown website")
+	}
+	return website, nil
 }
