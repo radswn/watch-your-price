@@ -1,8 +1,8 @@
 package search_module
 
 import (
-	"backend/search_module/website_type"
 	"errors"
+	"search_module/website_type"
 
 	"github.com/sirupsen/logrus"
 )

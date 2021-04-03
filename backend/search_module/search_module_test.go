@@ -1,9 +1,9 @@
 package search_module_test
 
 import (
-	"backend/search_module"
-	"backend/search_module/website_type"
 	"encoding/json"
+	"search_module"
+	"search_module/website_type"
 	"testing"
 
 	"github.com/sirupsen/logrus"

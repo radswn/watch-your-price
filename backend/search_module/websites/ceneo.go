@@ -1,12 +1,12 @@
 package websites
 
 import (
-	"backend/search_module"
 	"errors"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 	"github.com/sirupsen/logrus"
+	"search_module"
 	"strconv"
 	"strings"
 	"time"

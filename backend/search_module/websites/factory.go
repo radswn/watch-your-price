@@ -1,8 +1,8 @@
 package websites
 
 import (
-	"backend/search_module"
-	"backend/search_module/website_type"
+	"search_module"
+	"search_module/website_type"
 )
 
 // New returns new instance of SearchModule with provided websites
