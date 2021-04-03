@@ -1,12 +1,12 @@
 package search_module
 
 import (
-	"backend/search_module/website_type"
-	"backend/search_module/websites"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
+	"search_module/website_type"
+	"search_module/websites"
 	"strings"
 )
 
