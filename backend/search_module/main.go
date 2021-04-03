@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"os"
 	"runtime"
 	"search_module/search"
@@ -11,11 +13,14 @@ import (
 	"strings"
 )
 
-var searchModule *search.SearchModule
-
 func init() {
 	setupLogrus()
-	searchModule = setupSearchModule()
+	searchModule := setupSearchModule()
+	r := mux.NewRouter().StrictSlash(true)
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+	})
+	logrus.Fatal(http.ListenAndServe(":8000", r))
 }
 
 func main() {
