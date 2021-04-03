@@ -1,13 +1,13 @@
 package main
 
 import (
-	"backend/search_module"
-	"backend/search_module/website_type"
-	"backend/search_module/websites"
 	"fmt"
 	"net/http"
 	"os"
 	"runtime"
+	"search_module/search"
+	"search_module/search/website_type"
+	"search_module/search/websites"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -59,7 +59,7 @@ func setupRouter() *gin.Engine {
 	})
 	searchModule := setupSearchModule()
 	r.POST("/search", func(c *gin.Context) {
-		var request search_module.SearchRequest
+		var request search.SearchRequest
 		err := c.BindJSON(&request)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -103,9 +103,9 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-func setupSearchModule() *search_module.SearchModule {
+func setupSearchModule() *search.SearchModule {
 	ceneoSearch := websites.New(website_type.Ceneo)
-	searchModule, err := search_module.New(map[website_type.WebsiteType]search_module.WebsiteSearch{
+	searchModule, err := search.New(map[website_type.WebsiteType]search.WebsiteSearch{
 		website_type.Ceneo: ceneoSearch,
 	})
 	if err != nil {

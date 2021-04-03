@@ -5,12 +5,13 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
-	"search_module/website_type"
-	"search_module/websites"
+	"search_module/search"
+	"search_module/search/website_type"
+	"search_module/search/websites"
 	"strings"
 )
 
-var searchModule *SearchModule
+var searchModule *search.SearchModule
 
 func init() {
 	setupLogrus()
@@ -42,9 +43,9 @@ func setupLogrus() {
 	logrus.SetReportCaller(true)
 }
 
-func setupSearchModule() *SearchModule {
+func setupSearchModule() *search.SearchModule {
 	ceneoSearch := websites.New(website_type.Ceneo)
-	searchModule, err := New(map[website_type.WebsiteType]WebsiteSearch{
+	searchModule, err := search.New(map[website_type.WebsiteType]search.WebsiteSearch{
 		website_type.Ceneo: ceneoSearch,
 	})
 	if err != nil {

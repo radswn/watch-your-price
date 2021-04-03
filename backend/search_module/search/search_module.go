@@ -1,8 +1,8 @@
-package search_module
+package search
 
 import (
 	"errors"
-	"search_module/website_type"
+	"search_module/search/website_type"
 
 	"github.com/sirupsen/logrus"
 )
