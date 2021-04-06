@@ -25,7 +25,7 @@ func init() {
 	r := mux.NewRouter().StrictSlash(true)
 	r.Handle("/", http.HandlerFunc(searchHandler)).Methods("GET")
 
-	logrus.Fatal(http.ListenAndServe(":8000", r))
+	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
 
 func main() {
