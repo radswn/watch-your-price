@@ -54,7 +54,7 @@ func setupLogrus() {
 }
 
 func setupSearchModule() *scraper.SearchModule {
-	ceneoSearch := websites.New(scraper.Ceneo)
+	ceneoSearch := websites.NewSearch(scraper.Ceneo)
 	searchModule, err := scraper.NewSearch(map[scraper.WebsiteType]scraper.WebsiteSearch{
 		scraper.Ceneo: ceneoSearch,
 	})
