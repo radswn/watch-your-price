@@ -1,6 +1,7 @@
 package check
 
 import (
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -17,11 +18,11 @@ type ceneoTestSuite struct {
 }
 
 func (suite *ceneoTestSuite) SetupSuite() {
-	suite.server = testCheckServer()
+	suite.server = testCeneoServer()
 	suite.ceneoCheck = testCeneoCheck(suite.server.URL)
 }
 
-func testCheckServer() *httptest.Server {
+func testCeneoServer() *httptest.Server {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/item", func(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +50,12 @@ func removePort(domain string) string {
 	return strings.Split(domain, ":")[0]
 }
 
-func TestRunTestSuite(t *testing.T) {
+func TestRunTestCeneoSuite(t *testing.T) {
 	suite.Run(t, new(ceneoTestSuite))
+}
+
+func (suite *ceneoTestSuite) TestShouldReturnItemPrice() {
+	result, err := suite.ceneoCheck.check(suite.server.URL + "/item")
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), "2246.58", result.Price)
 }
