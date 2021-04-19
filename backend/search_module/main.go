@@ -17,7 +17,7 @@ import (
 )
 
 var searchModule *search.Module
-var checkModule *check.CheckModule
+var checkModule *check.Module
 
 func init() {
 	setupLogrus()
@@ -67,7 +67,7 @@ func setupSearchModule() *search.Module {
 	return searchModule
 }
 
-func setupCheckModule() *check.CheckModule {
+func setupCheckModule() *check.Module {
 	ceneoCheck := check.NewWebsiteCheck(scraper.Ceneo)
 	checkModule, err := check.NewCheck(map[scraper.WebsiteType]check.WebsiteCheck{
 		scraper.Ceneo: ceneoCheck,
@@ -130,7 +130,7 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request := check.CheckRequest{Url: url, Website: website}
+	request := check.Request{Url: url, Website: website}
 	result, _ := checkModule.Check(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)

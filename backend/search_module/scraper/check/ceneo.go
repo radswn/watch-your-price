@@ -24,18 +24,18 @@ func newCeneoCheck() *ceneoCheck {
 	}
 }
 
-func (cc *ceneoCheck) GetResults(url string) (CheckResult, error) {
+func (cc *ceneoCheck) GetResults(url string) (Result, error) {
 
 	result, err := cc.check(url)
 	if err != nil {
 		logrus.WithError(err).Error("can't process check request")
-		return CheckResult{}, err
+		return Result{}, err
 	}
 
 	return result, nil
 }
 
-func (cc *ceneoCheck) check(url string) (CheckResult, error) {
+func (cc *ceneoCheck) check(url string) (Result, error) {
 	var price string
 
 	c := colly.NewCollector(
@@ -45,7 +45,7 @@ func (cc *ceneoCheck) check(url string) (CheckResult, error) {
 	err := cc.addLimitToCollector(c)
 	if err != nil {
 		logrus.WithError(err).Error("error while limiting collector")
-		return CheckResult{}, err
+		return Result{}, err
 	}
 
 	findPriceTagOnPage(c, &price)
@@ -53,9 +53,9 @@ func (cc *ceneoCheck) check(url string) (CheckResult, error) {
 	err = c.Visit(url)
 	if err != nil {
 		logrus.WithError(err).Error("error while running collector")
-		return CheckResult{}, err
+		return Result{}, err
 	}
-	return CheckResult{Price: price}, nil
+	return Result{Price: price}, nil
 }
 
 func (cc *ceneoCheck) addLimitToCollector(collector *colly.Collector) error {

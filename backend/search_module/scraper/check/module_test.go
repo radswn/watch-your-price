@@ -16,8 +16,8 @@ func init() {
 type testWebsiteCheck struct {
 }
 
-func (twc testWebsiteCheck) GetResults(url string) (check.CheckResult, error) {
-	result := check.CheckResult{
+func (twc testWebsiteCheck) GetResults(url string) (check.Result, error) {
+	result := check.Result{
 		Price: "10",
 	}
 	return result, nil
@@ -29,7 +29,7 @@ func TestCheckShouldReturnResultsFromWebsiteCheckImplementation(t *testing.T) {
 	module, err := check.NewCheck(websiteCheckMap)
 	assert.Nil(t, err)
 
-	requestData := check.CheckRequest{
+	requestData := check.Request{
 		Url:     "example.com/3",
 		Website: "ceneo",
 	}
