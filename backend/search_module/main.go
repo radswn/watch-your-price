@@ -22,7 +22,7 @@ func init() {
 	searchModule = setupSearchModule()
 
 	r := mux.NewRouter().StrictSlash(true)
-	r.Handle("/", http.HandlerFunc(searchHandler)).Methods("GET")
+	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
 
 	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
