@@ -1,4 +1,4 @@
-package websites
+package search
 
 import (
 	"github.com/stretchr/testify/assert"

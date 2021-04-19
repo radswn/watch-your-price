@@ -10,13 +10,14 @@ import (
 	"os"
 	"runtime"
 	"search_module/scraper"
-	"search_module/scraper/websites"
+	"search_module/scraper/check"
+	"search_module/scraper/search"
 	"strconv"
 	"strings"
 )
 
-var searchModule *scraper.SearchModule
-var checkModule *scraper.CheckModule
+var searchModule *search.Module
+var checkModule *check.CheckModule
 
 func init() {
 	setupLogrus()
@@ -55,9 +56,9 @@ func setupLogrus() {
 	logrus.SetReportCaller(true)
 }
 
-func setupSearchModule() *scraper.SearchModule {
-	ceneoSearch := websites.NewSearch(scraper.Ceneo)
-	searchModule, err := scraper.NewSearch(map[scraper.WebsiteType]scraper.WebsiteSearch{
+func setupSearchModule() *search.Module {
+	ceneoSearch := search.NewWebsiteSearch(scraper.Ceneo)
+	searchModule, err := search.New(map[scraper.WebsiteType]search.WebsiteSearch{
 		scraper.Ceneo: ceneoSearch,
 	})
 	if err != nil {
@@ -66,9 +67,9 @@ func setupSearchModule() *scraper.SearchModule {
 	return searchModule
 }
 
-func setupCheckModule() *scraper.CheckModule {
-	ceneoCheck := websites.NewCheck(scraper.Ceneo)
-	checkModule, err := scraper.NewCheck(map[scraper.WebsiteType]scraper.WebsiteCheck{
+func setupCheckModule() *check.CheckModule {
+	ceneoCheck := check.NewWebsiteCheck(scraper.Ceneo)
+	checkModule, err := check.NewCheck(map[scraper.WebsiteType]check.WebsiteCheck{
 		scraper.Ceneo: ceneoCheck,
 	})
 	if err != nil {
@@ -103,7 +104,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.Atoi(pageQuery[0])
 	}
 
-	request := scraper.SearchRequest{Page: page, Phrase: phrase, Website: website}
+	request := search.Request{Page: page, Phrase: phrase, Website: website}
 	result, _ := searchModule.Search(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
@@ -129,7 +130,7 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request := scraper.CheckRequest{Url: url, Website: website}
+	request := check.CheckRequest{Url: url, Website: website}
 	result, _ := checkModule.Check(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)

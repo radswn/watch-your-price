@@ -1,8 +1,9 @@
-package scraper_test
+package search_test
 
 import (
 	"encoding/json"
 	"search_module/scraper"
+	"search_module/scraper/search"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -16,8 +17,8 @@ func init() {
 type testWebsiteSearch struct {
 }
 
-func (tws testWebsiteSearch) GetResults(phrase string, page int) (scraper.SearchResult, error) {
-	sr := scraper.SearchResult{
+func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.Result, error) {
+	sr := search.Result{
 		Phrase:     phrase,
 		Page:       page,
 		NumOfPages: 5,
@@ -60,12 +61,12 @@ func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testin
 }
 
 func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) {
-	websiteSearchMap := make(map[scraper.WebsiteType]scraper.WebsiteSearch)
+	websiteSearchMap := make(map[scraper.WebsiteType]search.WebsiteSearch)
 	websiteSearchMap[scraper.Ceneo] = testWebsiteSearch{}
-	module, err := scraper.NewSearch(websiteSearchMap)
+	module, err := search.New(websiteSearchMap)
 	assert.Nil(t, err)
 
-	requestData := scraper.SearchRequest{
+	requestData := search.Request{
 		Phrase:  "test",
 		Page:    3,
 		Website: "ceneo",

@@ -1,9 +1,8 @@
-package websites
+package check
 
 import (
 	"github.com/sirupsen/logrus"
-	"search_module/scraper"
-	"time"
+		"time"
 )
 
 type ceneoCheck struct {
@@ -27,19 +26,19 @@ func newCeneoCheck() *ceneoCheck {
 	}
 }
 
-func (cc *ceneoCheck) GetResults(url string) (scraper.CheckResult, error) {
+func (cc *ceneoCheck) GetResults(url string) (CheckResult, error) {
 
 	result, err := cc.check(url)
 	if err != nil {
 		logrus.WithError(err).Error("can't process check request")
-		return scraper.CheckResult{}, err
+		return CheckResult{}, err
 	}
 
 	return result, nil
 }
 
-func (cc *ceneoCheck) check(url string) (scraper.CheckResult, error) {
-	result := scraper.CheckResult{
+func (cc *ceneoCheck) check(url string) (CheckResult, error) {
+	result := CheckResult{
 		Price: "10", //TODO
 	}
 

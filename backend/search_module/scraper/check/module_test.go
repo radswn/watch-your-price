@@ -1,7 +1,8 @@
-package scraper_test
+package check_test
 
 import (
 	"search_module/scraper"
+	"search_module/scraper/check"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -15,20 +16,20 @@ func init() {
 type testWebsiteCheck struct {
 }
 
-func (twc testWebsiteCheck) GetResults(url string) (scraper.CheckResult, error) {
-	result := scraper.CheckResult{
+func (twc testWebsiteCheck) GetResults(url string) (check.CheckResult, error) {
+	result := check.CheckResult{
 		Price: "10",
 	}
 	return result, nil
 }
 
 func TestCheckShouldReturnResultsFromWebsiteCheckImplementation(t *testing.T) {
-	websiteCheckMap := make(map[scraper.WebsiteType]scraper.WebsiteCheck)
+	websiteCheckMap := make(map[scraper.WebsiteType]check.WebsiteCheck)
 	websiteCheckMap[scraper.Ceneo] = testWebsiteCheck{}
-	module, err := scraper.NewCheck(websiteCheckMap)
+	module, err := check.NewCheck(websiteCheckMap)
 	assert.Nil(t, err)
 
-	requestData := scraper.CheckRequest{
+	requestData := check.CheckRequest{
 		Url:     "example.com/3",
 		Website: "ceneo",
 	}

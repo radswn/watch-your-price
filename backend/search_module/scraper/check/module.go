@@ -1,8 +1,9 @@
-package scraper
+package check
 
 import (
 	"errors"
 	"github.com/sirupsen/logrus"
+	"search_module/scraper"
 )
 
 // CheckResult represent the response from the website price check
@@ -12,8 +13,8 @@ type CheckResult struct {
 
 // CheckRequest represent query to the specific website price check
 type CheckRequest struct {
-	Url     string      `json:"phrase" binding:"required"`
-	Website WebsiteType `json:"website" binding:"required"`
+	Url     string              `json:"phrase" binding:"required"`
+	Website scraper.WebsiteType `json:"website" binding:"required"`
 }
 
 // WebsiteCheck defines interface that has to be implemented by any website check
@@ -23,11 +24,11 @@ type WebsiteCheck interface {
 
 // CheckModule represent struct used to execute methods related to price checking
 type CheckModule struct {
-	websites map[WebsiteType]WebsiteCheck
+	websites map[scraper.WebsiteType]WebsiteCheck
 }
 
 // NewCheck returns new instance of CheckModule with provided websites
-func NewCheck(websites map[WebsiteType]WebsiteCheck) (*CheckModule, error) {
+func NewCheck(websites map[scraper.WebsiteType]WebsiteCheck) (*CheckModule, error) {
 	if len(websites) == 0 {
 		return nil, errors.New("check module should have at least one website")
 	}
