@@ -1,9 +1,9 @@
-package search_module_test
+package search_test
 
 import (
-	"backend/search_module"
-	"backend/search_module/website_type"
 	"encoding/json"
+	"search_module/search"
+	"search_module/search/website_type"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -17,8 +17,8 @@ func init() {
 type testWebsiteSearch struct {
 }
 
-func (tws testWebsiteSearch) GetResults(phrase string, page int) (search_module.SearchResult, error) {
-	sr := search_module.SearchResult{
+func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.Result, error) {
+	sr := search.Result{
 		Phrase:     phrase,
 		Page:       page,
 		NumOfPages: 5,
@@ -61,12 +61,12 @@ func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testin
 }
 
 func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) {
-	websiteSearchMap := make(map[website_type.WebsiteType]search_module.WebsiteSearch)
+	websiteSearchMap := make(map[website_type.WebsiteType]search.WebsiteSearch)
 	websiteSearchMap[website_type.Ceneo] = testWebsiteSearch{}
-	module, err := search_module.New(websiteSearchMap)
+	module, err := search.New(websiteSearchMap)
 	assert.Nil(t, err)
 
-	requestData := search_module.SearchRequest{
+	requestData := search.Request{
 		Phrase:  "test",
 		Page:    3,
 		Website: "ceneo",

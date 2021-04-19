@@ -1,13 +1,13 @@
 package websites
 
 import (
-	"backend/search_module"
-	"backend/search_module/website_type"
+	"search_module/search"
+	"search_module/search/website_type"
 )
 
 // New returns new instance of SearchModule with provided websites
-func New(websiteType website_type.WebsiteType) search_module.WebsiteSearch {
-	var module search_module.WebsiteSearch
+func New(websiteType website_type.WebsiteType) search.WebsiteSearch {
+	var module search.WebsiteSearch
 	switch websiteType {
 	case website_type.Ceneo:
 		module = newCeneoSearch()
