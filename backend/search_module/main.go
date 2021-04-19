@@ -23,6 +23,7 @@ func init() {
 
 	r := mux.NewRouter().StrictSlash(true)
 	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
+	r.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
 
 	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
@@ -93,6 +94,29 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	result, _ := searchModule.Search(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
+}
+
+func checkHandler(w http.ResponseWriter, r *http.Request) {
+	queryParameters := r.URL.Query()
+	urlQuery, ok := queryParameters["url"]
+	if !ok || len(urlQuery) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	url := urlQuery[0]
+
+	websiteQuery, ok := queryParameters["website"]
+	if !ok || len(websiteQuery) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	website, err := convertWebsite(websiteQuery[0])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(url, website)
 }
 
 func convertWebsite(websiteStr string) (search.WebsiteType, error) {
