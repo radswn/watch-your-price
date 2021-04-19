@@ -33,7 +33,7 @@ func TestCheckShouldReturnResultsFromWebsiteCheckImplementation(t *testing.T) {
 		Website: "ceneo",
 	}
 
-	expectedPrice := 10
+	expectedPrice := "10"
 
 	result, err := module.Check(requestData)
 
