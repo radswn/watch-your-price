@@ -34,14 +34,14 @@ func newCeneoSearch() *ceneoSearch {
 	}
 }
 
-func (cs *ceneoSearch) GetResults(phrase string, page int) (scraper.Result, error) {
+func (cs *ceneoSearch) GetResults(phrase string, page int) (scraper.SearchResult, error) {
 
 	url := cs.createSearchUrl(phrase, page)
 
 	result, err := cs.search(url, phrase, page)
 	if err != nil {
 		logrus.WithError(err).Error("can't process search request")
-		return scraper.Result{}, err
+		return scraper.SearchResult{}, err
 	}
 
 	return result, nil
@@ -59,8 +59,8 @@ func (cs *ceneoSearch) createSearchUrl(phrase string, page int) string {
 	return url
 }
 
-func (cs *ceneoSearch) search(url string, phrase string, page int) (scraper.Result, error) {
-	result := scraper.Result{
+func (cs *ceneoSearch) search(url string, phrase string, page int) (scraper.SearchResult, error) {
+	result := scraper.SearchResult{
 		Phrase:  phrase,
 		Page:    page,
 		Results: make(map[string]string),
@@ -69,25 +69,25 @@ func (cs *ceneoSearch) search(url string, phrase string, page int) (scraper.Resu
 	c, err := cs.createCollector(&result)
 	if err != nil {
 		logrus.WithError(err).Error("can't create collector")
-		return scraper.Result{}, err
+		return scraper.SearchResult{}, err
 	}
 
 	q, err := cs.createQueue()
 	if err != nil {
 		logrus.WithError(err).Error("cannot create queue for ceneo")
-		return scraper.Result{}, err
+		return scraper.SearchResult{}, err
 	}
 
 	err = q.AddURL(url)
 	if err != nil {
 		logrus.WithError(err).Error("error while adding url to search queue")
-		return scraper.Result{}, err
+		return scraper.SearchResult{}, err
 	}
 
 	err = q.Run(c)
 	if err != nil {
 		logrus.WithError(err).Error("error while running collector")
-		return scraper.Result{}, err
+		return scraper.SearchResult{}, err
 	}
 
 	c.Wait()
@@ -95,7 +95,7 @@ func (cs *ceneoSearch) search(url string, phrase string, page int) (scraper.Resu
 	return result, nil
 }
 
-func (cs *ceneoSearch) createCollector(result *scraper.Result) (*colly.Collector, error) {
+func (cs *ceneoSearch) createCollector(result *scraper.SearchResult) (*colly.Collector, error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains(cs.domain),
 	)

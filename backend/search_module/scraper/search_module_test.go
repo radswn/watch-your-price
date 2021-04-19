@@ -16,8 +16,8 @@ func init() {
 type testWebsiteSearch struct {
 }
 
-func (tws testWebsiteSearch) GetResults(phrase string, page int) (scraper.Result, error) {
-	sr := scraper.Result{
+func (tws testWebsiteSearch) GetResults(phrase string, page int) (scraper.SearchResult, error) {
+	sr := scraper.SearchResult{
 		Phrase:     phrase,
 		Page:       page,
 		NumOfPages: 5,
@@ -62,10 +62,10 @@ func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testin
 func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) {
 	websiteSearchMap := make(map[scraper.WebsiteType]scraper.WebsiteSearch)
 	websiteSearchMap[scraper.Ceneo] = testWebsiteSearch{}
-	module, err := scraper.New(websiteSearchMap)
+	module, err := scraper.NewSearch(websiteSearchMap)
 	assert.Nil(t, err)
 
-	requestData := scraper.Request{
+	requestData := scraper.SearchRequest{
 		Phrase:  "test",
 		Page:    3,
 		Website: "ceneo",

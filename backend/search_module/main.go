@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var searchModule *scraper.Module
+var searchModule *scraper.SearchModule
 
 func init() {
 	setupLogrus()
@@ -53,9 +53,9 @@ func setupLogrus() {
 	logrus.SetReportCaller(true)
 }
 
-func setupSearchModule() *scraper.Module {
+func setupSearchModule() *scraper.SearchModule {
 	ceneoSearch := websites.New(scraper.Ceneo)
-	searchModule, err := scraper.New(map[scraper.WebsiteType]scraper.WebsiteSearch{
+	searchModule, err := scraper.NewSearch(map[scraper.WebsiteType]scraper.WebsiteSearch{
 		scraper.Ceneo: ceneoSearch,
 	})
 	if err != nil {
@@ -90,7 +90,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.Atoi(pageQuery[0])
 	}
 
-	request := scraper.Request{Page: page, Phrase: phrase, Website: website}
+	request := scraper.SearchRequest{Page: page, Phrase: phrase, Website: website}
 	result, _ := searchModule.Search(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
