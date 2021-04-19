@@ -1,14 +1,14 @@
 package websites
 
 import (
-	"search_module/search"
+	"search_module/scraper"
 )
 
 // New returns new instance of SearchModule with provided websites
-func New(websiteType search.WebsiteType) search.WebsiteSearch {
-	var module search.WebsiteSearch
+func New(websiteType scraper.WebsiteType) scraper.WebsiteSearch {
+	var module scraper.WebsiteSearch
 	switch websiteType {
-	case search.Ceneo:
+	case scraper.Ceneo:
 		module = newCeneoSearch()
 	}
 	return module

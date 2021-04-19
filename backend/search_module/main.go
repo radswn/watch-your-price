@@ -9,13 +9,13 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"search_module/search"
-	"search_module/search/websites"
+	"search_module/scraper"
+	"search_module/scraper/websites"
 	"strconv"
 	"strings"
 )
 
-var searchModule *search.Module
+var searchModule *scraper.Module
 
 func init() {
 	setupLogrus()
@@ -53,10 +53,10 @@ func setupLogrus() {
 	logrus.SetReportCaller(true)
 }
 
-func setupSearchModule() *search.Module {
-	ceneoSearch := websites.New(search.Ceneo)
-	searchModule, err := search.New(map[search.WebsiteType]search.WebsiteSearch{
-		search.Ceneo: ceneoSearch,
+func setupSearchModule() *scraper.Module {
+	ceneoSearch := websites.New(scraper.Ceneo)
+	searchModule, err := scraper.New(map[scraper.WebsiteType]scraper.WebsiteSearch{
+		scraper.Ceneo: ceneoSearch,
 	})
 	if err != nil {
 		logrus.WithError(err).Panic("Can't initialize search module.")
@@ -90,7 +90,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.Atoi(pageQuery[0])
 	}
 
-	request := search.Request{Page: page, Phrase: phrase, Website: website}
+	request := scraper.Request{Page: page, Phrase: phrase, Website: website}
 	result, _ := searchModule.Search(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
@@ -119,11 +119,11 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(url, website)
 }
 
-func convertWebsite(websiteStr string) (search.WebsiteType, error) {
-	var website search.WebsiteType
+func convertWebsite(websiteStr string) (scraper.WebsiteType, error) {
+	var website scraper.WebsiteType
 	switch strings.ToLower(websiteStr) {
 	case "ceneo":
-		website = search.Ceneo
+		website = scraper.Ceneo
 		break
 	default:
 		return "", errors.New("unknown website")

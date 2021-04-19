@@ -1,8 +1,8 @@
-package search_test
+package scraper_test
 
 import (
 	"encoding/json"
-	"search_module/search"
+	"search_module/scraper"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -16,8 +16,8 @@ func init() {
 type testWebsiteSearch struct {
 }
 
-func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.Result, error) {
-	sr := search.Result{
+func (tws testWebsiteSearch) GetResults(phrase string, page int) (scraper.Result, error) {
+	sr := scraper.Result{
 		Phrase:     phrase,
 		Page:       page,
 		NumOfPages: 5,
@@ -33,17 +33,17 @@ func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.Result,
 
 func TestUnmarshallingWebsiteTypeWithCorrectValueShouldReturnEnumWithAppropriateType(t *testing.T) {
 	jsonInput := []byte(`"ceneo"`)
-	var wt search.WebsiteType
+	var wt scraper.WebsiteType
 
 	err := json.Unmarshal(jsonInput, &wt)
 
 	assert.Nil(t, err)
-	assert.Equal(t, wt, search.Ceneo)
+	assert.Equal(t, wt, scraper.Ceneo)
 }
 
 func TestUnmarshallingWebsiteTypeWithEmptyValueShouldReturnError(t *testing.T) {
 	jsonInput := []byte(`""`)
-	var wt search.WebsiteType
+	var wt scraper.WebsiteType
 
 	err := json.Unmarshal(jsonInput, &wt)
 
@@ -52,7 +52,7 @@ func TestUnmarshallingWebsiteTypeWithEmptyValueShouldReturnError(t *testing.T) {
 
 func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testing.T) {
 	jsonInput := []byte(`"not_exist"`)
-	var wt search.WebsiteType
+	var wt scraper.WebsiteType
 
 	err := json.Unmarshal(jsonInput, &wt)
 
@@ -60,12 +60,12 @@ func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testin
 }
 
 func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) {
-	websiteSearchMap := make(map[search.WebsiteType]search.WebsiteSearch)
-	websiteSearchMap[search.Ceneo] = testWebsiteSearch{}
-	module, err := search.New(websiteSearchMap)
+	websiteSearchMap := make(map[scraper.WebsiteType]scraper.WebsiteSearch)
+	websiteSearchMap[scraper.Ceneo] = testWebsiteSearch{}
+	module, err := scraper.New(websiteSearchMap)
 	assert.Nil(t, err)
 
-	requestData := search.Request{
+	requestData := scraper.Request{
 		Phrase:  "test",
 		Page:    3,
 		Website: "ceneo",
