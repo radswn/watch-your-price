@@ -10,7 +10,6 @@ import (
 	"os"
 	"runtime"
 	"search_module/search"
-	"search_module/search/website_type"
 	"search_module/search/websites"
 	"strconv"
 	"strings"
@@ -54,9 +53,9 @@ func setupLogrus() {
 }
 
 func setupSearchModule() *search.Module {
-	ceneoSearch := websites.New(website_type.Ceneo)
-	searchModule, err := search.New(map[website_type.WebsiteType]search.WebsiteSearch{
-		website_type.Ceneo: ceneoSearch,
+	ceneoSearch := websites.New(search.Ceneo)
+	searchModule, err := search.New(map[search.WebsiteType]search.WebsiteSearch{
+		search.Ceneo: ceneoSearch,
 	})
 	if err != nil {
 		logrus.WithError(err).Panic("Can't initialize search module.")
@@ -96,11 +95,11 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(result)
 }
 
-func convertWebsite(websiteStr string) (website_type.WebsiteType, error) {
-	var website website_type.WebsiteType
+func convertWebsite(websiteStr string) (search.WebsiteType, error) {
+	var website search.WebsiteType
 	switch strings.ToLower(websiteStr) {
 	case "ceneo":
-		website = website_type.Ceneo
+		website = search.Ceneo
 		break
 	default:
 		return "", errors.New("unknown website")

@@ -2,8 +2,6 @@ package search
 
 import (
 	"errors"
-	"search_module/search/website_type"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,9 +15,9 @@ type Result struct {
 
 // SearchRequest represent query to the specific website search
 type Request struct {
-	Phrase  string                   `json:"phrase" binding:"required"`
-	Page    int                      `json:"page"`
-	Website website_type.WebsiteType `json:"website" binding:"required"`
+	Phrase  string      `json:"phrase" binding:"required"`
+	Page    int         `json:"page"`
+	Website WebsiteType `json:"website" binding:"required"`
 }
 
 // WebsiteSearch defines interface that has to be implemented by any website search
@@ -29,11 +27,11 @@ type WebsiteSearch interface {
 
 // SearchModule represent struct used to execute methods related to searching
 type Module struct {
-	websites map[website_type.WebsiteType]WebsiteSearch
+	websites map[WebsiteType]WebsiteSearch
 }
 
 // New returns new instance of SearchModule with provided websites
-func New(websites map[website_type.WebsiteType]WebsiteSearch) (*Module, error) {
+func New(websites map[WebsiteType]WebsiteSearch) (*Module, error) {
 	if len(websites) == 0 {
 		return nil, errors.New("search module should have at least one website")
 	}

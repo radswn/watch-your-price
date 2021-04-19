@@ -3,7 +3,6 @@ package search_test
 import (
 	"encoding/json"
 	"search_module/search"
-	"search_module/search/website_type"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -34,17 +33,17 @@ func (tws testWebsiteSearch) GetResults(phrase string, page int) (search.Result,
 
 func TestUnmarshallingWebsiteTypeWithCorrectValueShouldReturnEnumWithAppropriateType(t *testing.T) {
 	jsonInput := []byte(`"ceneo"`)
-	var wt website_type.WebsiteType
+	var wt search.WebsiteType
 
 	err := json.Unmarshal(jsonInput, &wt)
 
 	assert.Nil(t, err)
-	assert.Equal(t, wt, website_type.Ceneo)
+	assert.Equal(t, wt, search.Ceneo)
 }
 
 func TestUnmarshallingWebsiteTypeWithEmptyValueShouldReturnError(t *testing.T) {
 	jsonInput := []byte(`""`)
-	var wt website_type.WebsiteType
+	var wt search.WebsiteType
 
 	err := json.Unmarshal(jsonInput, &wt)
 
@@ -53,7 +52,7 @@ func TestUnmarshallingWebsiteTypeWithEmptyValueShouldReturnError(t *testing.T) {
 
 func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testing.T) {
 	jsonInput := []byte(`"not_exist"`)
-	var wt website_type.WebsiteType
+	var wt search.WebsiteType
 
 	err := json.Unmarshal(jsonInput, &wt)
 
@@ -61,8 +60,8 @@ func TestUnmarshallingWebsiteTypeWithNonExistingValueShouldReturnError(t *testin
 }
 
 func TestSearchShouldReturnResultsFromWebsiteSearchImplementation(t *testing.T) {
-	websiteSearchMap := make(map[website_type.WebsiteType]search.WebsiteSearch)
-	websiteSearchMap[website_type.Ceneo] = testWebsiteSearch{}
+	websiteSearchMap := make(map[search.WebsiteType]search.WebsiteSearch)
+	websiteSearchMap[search.Ceneo] = testWebsiteSearch{}
 	module, err := search.New(websiteSearchMap)
 	assert.Nil(t, err)
 
