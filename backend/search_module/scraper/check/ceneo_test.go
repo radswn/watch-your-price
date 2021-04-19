@@ -37,12 +37,10 @@ func testCeneoCheck(serverURL string) *ceneoCheck {
 	domain := strings.TrimPrefix(serverURL, "http://")
 	domain = removePort(domain)
 	return &ceneoCheck{
-		queueStorage: 10,
-		queueThreads: 1,
-		domain:       domain,
-		domainGlob:   "*",
-		delay:        0,
-		randomDelay:  0,
+		domain:      domain,
+		domainGlob:  "*",
+		delay:       0,
+		randomDelay: 0,
 	}
 }
 
