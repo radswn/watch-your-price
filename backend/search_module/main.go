@@ -16,10 +16,12 @@ import (
 )
 
 var searchModule *scraper.SearchModule
+var checkModule *scraper.CheckModule
 
 func init() {
 	setupLogrus()
 	searchModule = setupSearchModule()
+	checkModule = setupCheckModule()
 
 	r := mux.NewRouter().StrictSlash(true)
 	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
@@ -62,6 +64,17 @@ func setupSearchModule() *scraper.SearchModule {
 		logrus.WithError(err).Panic("Can't initialize search module.")
 	}
 	return searchModule
+}
+
+func setupCheckModule() *scraper.CheckModule {
+	ceneoCheck := websites.NewCheck(scraper.Ceneo)
+	checkModule, err := scraper.NewCheck(map[scraper.WebsiteType]scraper.WebsiteCheck{
+		scraper.Ceneo: ceneoCheck,
+	})
+	if err != nil {
+		logrus.WithError(err).Panic("Can't initialize search module.")
+	}
+	return checkModule
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +129,10 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(url, website)
+	request := scraper.CheckRequest{Url: url, Website: website}
+	result, _ := checkModule.Check(request)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(result)
 }
 
 func convertWebsite(websiteStr string) (scraper.WebsiteType, error) {
