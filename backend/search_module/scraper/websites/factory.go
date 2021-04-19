@@ -13,3 +13,13 @@ func NewSearch(websiteType scraper.WebsiteType) scraper.WebsiteSearch {
 	}
 	return module
 }
+
+// NewCheck returns new instance of CheckModule with provided websites
+func NewCheck(websiteType scraper.WebsiteType) scraper.WebsiteCheck {
+	var module scraper.WebsiteCheck
+	switch websiteType {
+	case scraper.Ceneo:
+		module = newCeneoCheck()
+	}
+	return module
+}
