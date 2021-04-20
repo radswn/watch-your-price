@@ -10,19 +10,15 @@ import (
 	"os"
 	"runtime"
 	"search_module/scraper"
-	"search_module/scraper/check"
-	"search_module/scraper/search"
 	"strconv"
 	"strings"
 )
 
-var searchModule *search.Module
-var checkModule *check.Module
+var scraperModule *scraper.Module
 
 func init() {
 	setupLogrus()
-	searchModule = setupSearchModule()
-	checkModule = setupCheckModule()
+	scraperModule = setupScraperModule()
 
 	r := mux.NewRouter().StrictSlash(true)
 	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
@@ -56,26 +52,15 @@ func setupLogrus() {
 	logrus.SetReportCaller(true)
 }
 
-func setupSearchModule() *search.Module {
-	ceneoSearch := search.NewWebsiteSearch(scraper.Ceneo)
-	searchModule, err := search.New(map[scraper.WebsiteType]search.WebsiteSearch{
-		scraper.Ceneo: ceneoSearch,
+func setupScraperModule() *scraper.Module {
+	ceneoScraper := scraper.NewCeneoScraper()
+	scraperModule, err := scraper.New(map[scraper.WebsiteType]scraper.WebsiteScraper{
+		scraper.Ceneo: ceneoScraper,
 	})
 	if err != nil {
 		logrus.WithError(err).Panic("Can't initialize search module.")
 	}
-	return searchModule
-}
-
-func setupCheckModule() *check.Module {
-	ceneoCheck := check.NewWebsiteCheck(scraper.Ceneo)
-	checkModule, err := check.NewCheck(map[scraper.WebsiteType]check.WebsiteCheck{
-		scraper.Ceneo: ceneoCheck,
-	})
-	if err != nil {
-		logrus.WithError(err).Panic("Can't initialize search module.")
-	}
-	return checkModule
+	return scraperModule
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -104,8 +89,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.Atoi(pageQuery[0])
 	}
 
-	request := search.Request{Page: page, Phrase: phrase, Website: website}
-	result, _ := searchModule.Search(request)
+	request := scraper.SearchRequest{Page: page, Phrase: phrase, Website: website}
+	result, _ := scraperModule.Search(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
 }
@@ -130,8 +115,8 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request := check.Request{Url: url, Website: website}
-	result, _ := checkModule.Check(request)
+	request := scraper.CheckRequest{Url: url, Website: website}
+	result, _ := scraperModule.CheckPrice(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
 }
