@@ -3,16 +3,20 @@ package scraper
 import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2/queue"
 	"github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
 
 type CeneoScraper struct {
-	Domain      string
-	DomainGlob  string
-	Delay       time.Duration
-	RandomDelay time.Duration
+	Domain       string
+	DomainGlob   string
+	Delay        time.Duration
+	RandomDelay  time.Duration
+	QueueStorage int
+	QueueThreads int
+	BaseUrl      string
 }
 
 func NewCeneoScraper() *CeneoScraper {
@@ -24,6 +28,19 @@ func NewCeneoScraper() *CeneoScraper {
 	}
 }
 
+func (cs *CeneoScraper) Search(phrase string, page int) (SearchResult, error) {
+
+	url := cs.createSearchUrl(phrase, page)
+
+	result, err := cs.search(url, phrase, page)
+	if err != nil {
+		logrus.WithError(err).Error("can't process search request")
+		return SearchResult{}, err
+	}
+
+	return result, nil
+}
+
 func (cs *CeneoScraper) CheckPrice(url string) (CheckResult, error) {
 
 	result, err := cs.check(url)
@@ -33,6 +50,29 @@ func (cs *CeneoScraper) CheckPrice(url string) (CheckResult, error) {
 	}
 
 	return result, nil
+}
+
+func (cs *CeneoScraper) addLimitToCollector(collector *colly.Collector) error {
+	err := collector.Limit(&colly.LimitRule{
+		DomainGlob:  cs.DomainGlob,
+		Delay:       cs.Delay,
+		RandomDelay: cs.RandomDelay,
+	})
+	return err
+}
+
+func (cs *CeneoScraper) createQueue() (*queue.Queue, error) {
+	q, err := queue.New(
+		cs.QueueThreads,
+		&queue.InMemoryQueueStorage{MaxSize: cs.QueueStorage},
+	)
+
+	if err != nil {
+		logrus.WithError(err).Error("can not create ceneo queue")
+		return nil, err
+	}
+
+	return q, nil
 }
 
 func (cs *CeneoScraper) check(url string) (CheckResult, error) {
@@ -56,15 +96,6 @@ func (cs *CeneoScraper) check(url string) (CheckResult, error) {
 		return CheckResult{}, err
 	}
 	return CheckResult{Price: price}, nil
-}
-
-func (cs *CeneoScraper) addLimitToCollector(collector *colly.Collector) error {
-	err := collector.Limit(&colly.LimitRule{
-		DomainGlob:  cs.DomainGlob,
-		Delay:       cs.Delay,
-		RandomDelay: cs.RandomDelay,
-	})
-	return err
 }
 
 func findPriceTagOnPage(collector *colly.Collector, price *string) {
