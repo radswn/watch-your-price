@@ -20,7 +20,7 @@ func (cs *CeneoScraper) check(url string) (CheckResult, error) {
 		return CheckResult{}, err
 	}
 
-	findPriceTagOnPage(c, &price)
+	cs.findPriceTagOnPage(c, &price)
 
 	err = c.Visit(url)
 	if err != nil {
@@ -30,7 +30,7 @@ func (cs *CeneoScraper) check(url string) (CheckResult, error) {
 	return CheckResult{Price: price}, nil
 }
 
-func findPriceTagOnPage(collector *colly.Collector, price *string) {
+func (cs *CeneoScraper) findPriceTagOnPage(collector *colly.Collector, price *string) {
 
 	collector.OnHTML("html", func(h *colly.HTMLElement) {
 		h.DOM.Find("meta").Each(func(_ int, s *goquery.Selection) {
