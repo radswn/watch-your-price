@@ -10,21 +10,24 @@ import (
 )
 
 type CeneoScraper struct {
-	Domain       string
-	DomainGlob   string
-	Delay        time.Duration
-	RandomDelay  time.Duration
-	QueueStorage int
-	QueueThreads int
-	BaseUrl      string
+	domain       string
+	domainGlob   string
+	delay        time.Duration
+	randomDelay  time.Duration
+	queueStorage int
+	queueThreads int
+	baseUrl      string
 }
 
 func NewCeneoScraper() *CeneoScraper {
 	return &CeneoScraper{
-		Domain:      "www.ceneo.pl",
-		DomainGlob:  "www.ceneo.pl/*",
-		Delay:       3 * time.Second,
-		RandomDelay: 1 * time.Second,
+		queueStorage: 100,
+		queueThreads: 4,
+		domain:       "www.ceneo.pl",
+		domainGlob:   "www.ceneo.pl/*",
+		baseUrl:      "https://www.ceneo.pl/;szukaj-",
+		delay:        3 * time.Second,
+		randomDelay:  1 * time.Second,
 	}
 }
 
@@ -54,17 +57,17 @@ func (cs *CeneoScraper) CheckPrice(url string) (CheckResult, error) {
 
 func (cs *CeneoScraper) addLimitToCollector(collector *colly.Collector) error {
 	err := collector.Limit(&colly.LimitRule{
-		DomainGlob:  cs.DomainGlob,
-		Delay:       cs.Delay,
-		RandomDelay: cs.RandomDelay,
+		DomainGlob:  cs.domainGlob,
+		Delay:       cs.delay,
+		RandomDelay: cs.randomDelay,
 	})
 	return err
 }
 
 func (cs *CeneoScraper) createQueue() (*queue.Queue, error) {
 	q, err := queue.New(
-		cs.QueueThreads,
-		&queue.InMemoryQueueStorage{MaxSize: cs.QueueStorage},
+		cs.queueThreads,
+		&queue.InMemoryQueueStorage{MaxSize: cs.queueStorage},
 	)
 
 	if err != nil {
@@ -79,7 +82,7 @@ func (cs *CeneoScraper) check(url string) (CheckResult, error) {
 	var price string
 
 	c := colly.NewCollector(
-		colly.AllowedDomains(cs.Domain),
+		colly.AllowedDomains(cs.domain),
 	)
 
 	err := cs.addLimitToCollector(c)

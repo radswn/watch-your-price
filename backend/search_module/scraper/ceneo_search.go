@@ -10,7 +10,7 @@ import (
 )
 
 func (cs *CeneoScraper) createSearchUrl(phrase string, page int) string {
-	url := strings.Join([]string{cs.BaseUrl, phrase}, "")
+	url := strings.Join([]string{cs.baseUrl, phrase}, "")
 
 	if page > 0 {
 		url = strings.Join([]string{url, ";0020-30-0-0-", strconv.Itoa(page)}, "")
@@ -59,7 +59,7 @@ func (cs *CeneoScraper) search(url string, phrase string, page int) (SearchResul
 
 func (cs *CeneoScraper) createSearchCollector(result *SearchResult) (*colly.Collector, error) {
 	c := colly.NewCollector(
-		colly.AllowedDomains(cs.Domain),
+		colly.AllowedDomains(cs.domain),
 	)
 
 	err := cs.addLimitToCollector(c)
