@@ -9,11 +9,11 @@ class Product(models.Model):
     name = models.CharField(_('name'), max_length=200)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     link = models.URLField()
-    price = models.PositiveIntegerField(_('price'), )  # do przedyskutowania
+    price = models.FloatField(_('price'), )
 
     def save(self, **kwargs):
         if not self.id:
-            self.id = hashlib.sha256(bytes(str(self.name), "utf-8")).hexdigest()
+            self.id = hashlib.sha256(bytes(str(self.link), "utf-8")).hexdigest()
             # print(self.id)
         super().save(*kwargs)
 
