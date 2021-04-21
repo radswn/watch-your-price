@@ -1,4 +1,4 @@
-package website_type
+package scraper
 
 import (
 	"encoding/json"
