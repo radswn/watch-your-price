@@ -8,3 +8,6 @@ migrations/
 db.sqlite3
 identifier.sqlite
 backend.log
+search_module/search.log
+search_module/main
+
