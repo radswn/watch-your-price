@@ -8,4 +8,4 @@ db.sqlite3
 identifier.sqlite
 search_module/main
 search_module/*.log
-
+.env
