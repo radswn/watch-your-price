@@ -34,7 +34,7 @@ func init() {
 	router = mux.NewRouter().StrictSlash(true)
 	router.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
 	router.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
-	router.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
+	router.Handle("/update", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
 
 	databaseChecker = database.NewDatabaseChecker(scraperModule)
 }
