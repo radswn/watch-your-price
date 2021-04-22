@@ -51,6 +51,20 @@ func main() {
 
 }
 
+func setupConfig() *AppConfig {
+	var config AppConfig
+
+	err := godotenv.Load()
+	if err != nil {
+		logrus.WithError(err).Warn("Cannot use env variables, use default")
+		return &AppConfig{Profile: "dev"}
+	}
+
+	config.Profile = os.Getenv("PROFILE")
+
+	return &config
+}
+
 func setupLogrus() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
