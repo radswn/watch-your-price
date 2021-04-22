@@ -70,14 +70,6 @@ func (c *Checker) UpdatePrices() {
 		return
 	}
 
-	stmt, err := c.database.Prepare("UPDATE entities_product SET price = ? WHERE id = ?")
-	if err != nil {
-		logrus.WithError(err).Error("Cannot prepare sql statement")
-	}
-	defer func(stmt *sql.Stmt) {
-		_ = stmt.Close()
-	}(stmt)
-
 	for _, product := range products {
 		scraperResult, err := c.scraperModule.CheckPrice(scraper.CheckRequest{
 			Url:     product.Link,
@@ -92,7 +84,7 @@ func (c *Checker) UpdatePrices() {
 			continue
 		}
 
-		_, err = stmt.Exec(scraperResult.Price, product.Id)
+		_, err = c.database.Exec("UPDATE entities_product SET price = ? WHERE id = ?", scraperResult.Price, product.Id)
 		if err != nil {
 			logrus.WithError(err).Warn("Cannot update price for item: ", product.Id)
 			continue
