@@ -63,6 +63,45 @@ func (c *Checker) GetAllProducts() []Product {
 	return result
 }
 
+func (c *Checker) UpdatePrices() {
+
+	products := c.GetAllProducts()
+	if len(products) == 0 {
+		return
+	}
+
+	stmt, err := c.database.Prepare("UPDATE entities_product SET price = ? WHERE id = ?")
+	if err != nil {
+		logrus.WithError(err).Error("Cannot prepare sql statement")
+	}
+	defer func(stmt *sql.Stmt) {
+		_ = stmt.Close()
+	}(stmt)
+
+	for _, product := range products {
+		scraperResult, err := c.scraperModule.CheckPrice(scraper.CheckRequest{
+			Url:     product.Link,
+			Website: scraper.Ceneo, // TODO change website after adding this field to product
+		})
+		if err != nil {
+			logrus.WithError(err).Warn("Cannot check price for item with url: ", product.Link)
+			continue
+		}
+
+		if product.Price == scraperResult.Price {
+			continue
+		}
+
+		_, err = stmt.Exec(scraperResult.Price, product.Id)
+		if err != nil {
+			logrus.WithError(err).Warn("Cannot update price for item: ", product.Id)
+			continue
+		}
+
+		logrus.Debugf("Id: %s, old price: %s, new price: %s", product.Id, product.Price, scraperResult.Price)
+	}
+}
+
 func (c *Checker) CloseDatabase() {
 	err := c.database.Close()
 	if err != nil {
