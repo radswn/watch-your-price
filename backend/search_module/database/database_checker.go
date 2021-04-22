@@ -3,11 +3,13 @@ package database
 import (
 	"database/sql"
 	"github.com/sirupsen/logrus"
+	"search_module/scraper"
 )
 import _ "github.com/mattn/go-sqlite3"
 
 type Checker struct {
-	database *sql.DB
+	database      *sql.DB
+	scraperModule *scraper.Module
 }
 
 type Product struct {
@@ -16,7 +18,7 @@ type Product struct {
 	Price float32
 }
 
-func NewDatabaseChecker() *Checker {
+func NewDatabaseChecker(module *scraper.Module) *Checker {
 	db, err := sql.Open("sqlite3", "file:../db.sqlite3")
 	if err != nil {
 		logrus.WithError(err).Fatal("Cannot connect to the database")
@@ -27,7 +29,7 @@ func NewDatabaseChecker() *Checker {
 		logrus.WithError(err).Fatal("Cannot connect to the database")
 		return nil
 	}
-	return &Checker{database: db}
+	return &Checker{database: db, scraperModule: module}
 }
 
 func (c *Checker) GetAllProducts() []Product {

@@ -36,7 +36,7 @@ func init() {
 	router.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
 	router.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
 
-	databaseChecker = database.NewDatabaseChecker()
+	databaseChecker = database.NewDatabaseChecker(scraperModule)
 }
 
 func main() {
