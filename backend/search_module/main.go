@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -42,12 +41,7 @@ func init() {
 
 func main() {
 
-	defer func(database *sql.DB) {
-		err := database.Close()
-		if err != nil {
-			logrus.WithError(err).Warn("Cannot close database")
-		}
-	}(databaseChecker.Database)
+	defer databaseChecker.CloseDatabase()
 
 	products := databaseChecker.GetAllProducts()
 

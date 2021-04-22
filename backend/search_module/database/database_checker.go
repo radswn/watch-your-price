@@ -7,7 +7,7 @@ import (
 import _ "github.com/mattn/go-sqlite3"
 
 type Checker struct {
-	Database *sql.DB
+	database *sql.DB
 }
 
 type Product struct {
@@ -27,13 +27,13 @@ func NewDatabaseChecker() *Checker {
 		logrus.WithError(err).Fatal("Cannot connect to the database")
 		return nil
 	}
-	return &Checker{Database: db}
+	return &Checker{database: db}
 }
 
 func (c *Checker) GetAllProducts() []Product {
 	var result []Product
 
-	rows, err := c.Database.Query("SELECT id, link, price FROM entities_product")
+	rows, err := c.database.Query("SELECT id, link, price FROM entities_product")
 	if err != nil {
 		logrus.WithError(err).Warn("Cannot get products from database")
 		return result
@@ -59,4 +59,11 @@ func (c *Checker) GetAllProducts() []Product {
 	}
 
 	return result
+}
+
+func (c *Checker) CloseDatabase() {
+	err := c.database.Close()
+	if err != nil {
+		logrus.WithError(err).Warn("Cannot close database")
+	}
 }
