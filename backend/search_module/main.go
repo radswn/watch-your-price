@@ -21,8 +21,10 @@ type AppConfig struct {
 	Profile string
 }
 
-var scraperModule *scraper.Module
 var Config *AppConfig
+var scraperModule *scraper.Module
+var router *mux.Router
+var databaseChecker *database.Checker
 
 func init() {
 	Config = setupConfig()
@@ -30,25 +32,30 @@ func init() {
 	setupLogrus()
 	scraperModule = setupScraperModule()
 
-	r := mux.NewRouter().StrictSlash(true)
-	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
-	r.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
-	r.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
+	router = mux.NewRouter().StrictSlash(true)
+	router.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
+	router.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
+	router.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
 
-	db := database.NewDatabaseChecker()
+	databaseChecker = database.NewDatabaseChecker()
+}
+
+func main() {
 
 	defer func(database *sql.DB) {
 		err := database.Close()
 		if err != nil {
 			logrus.WithError(err).Warn("Cannot close database")
 		}
-	}(db.Database)
+	}(databaseChecker.Database)
 
-	logrus.Fatal(http.ListenAndServe(":8001", r))
-}
+	products := databaseChecker.GetAllProducts()
 
-func main() {
+	for i, product := range products {
+		fmt.Printf("%d %#v\n", i, product)
+	}
 
+	logrus.Fatal(http.ListenAndServe(":8001", router))
 }
 
 func setupConfig() *AppConfig {
