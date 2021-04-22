@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"database/sql"
@@ -6,11 +6,11 @@ import (
 )
 import _ "github.com/mattn/go-sqlite3"
 
-type DatabaseChecker struct {
-	database *sql.DB
+type Checker struct {
+	Database *sql.DB
 }
 
-func NewDatabaseChecker() *DatabaseChecker {
+func NewDatabaseChecker() *Checker {
 	db, err := sql.Open("sqlite3", "file:../db.sqlite3")
 	if err != nil {
 		logrus.WithError(err).Fatal("Cannot connect to the database")
@@ -21,5 +21,5 @@ func NewDatabaseChecker() *DatabaseChecker {
 		logrus.WithError(err).Fatal("Cannot connect to the database")
 		return nil
 	}
-	return &DatabaseChecker{database: db}
+	return &Checker{Database: db}
 }

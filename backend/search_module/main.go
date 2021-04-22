@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"search_module/database"
 	"search_module/scraper"
 	"strconv"
 	"strings"
@@ -26,14 +27,14 @@ func init() {
 	r.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
 	r.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
 
-	db := NewDatabaseChecker()
+	db := database.NewDatabaseChecker()
 
 	defer func(database *sql.DB) {
 		err := database.Close()
 		if err != nil {
 			logrus.WithError(err).Warn("Cannot close database")
 		}
-	}(db.database)
+	}(db.Database)
 
 	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
