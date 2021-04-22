@@ -15,7 +15,7 @@ type Checker struct {
 type Product struct {
 	Id    string
 	Link  string
-	Price float32
+	Price string
 }
 
 func NewDatabaseChecker(module *scraper.Module) *Checker {
