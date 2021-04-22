@@ -22,21 +22,23 @@ type AppConfig struct {
 
 var Config *AppConfig
 var scraperModule *scraper.Module
-var router *mux.Router
 var databaseChecker *database.Checker
+var router *mux.Router
 
 func init() {
 	Config = setupConfig()
 
 	setupLogrus()
 	scraperModule = setupScraperModule()
+	databaseChecker = database.New(scraperModule)
 
 	router = mux.NewRouter().StrictSlash(true)
-	router.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
-	router.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
-	router.Handle("/update", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
+	router.HandleFunc("/search", searchHandler).Methods("GET")
+	router.HandleFunc("/check", checkHandler).Methods("GET")
+	router.HandleFunc("/update", func(_ http.ResponseWriter, _ *http.Request) {
+		databaseChecker.UpdatePrices()
+	})
 
-	databaseChecker = database.NewDatabaseChecker(scraperModule)
 }
 
 func main() {
@@ -154,10 +156,6 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 	result, _ := scraperModule.CheckPrice(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
-}
-
-func checkDatabaseHandler(_ http.ResponseWriter, _ *http.Request) {
-	databaseChecker.UpdatePrices()
 }
 
 func convertWebsite(websiteStr string) (scraper.WebsiteType, error) {
