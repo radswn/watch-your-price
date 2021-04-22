@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -16,9 +17,16 @@ import (
 	"strings"
 )
 
+type AppConfig struct {
+	Profile string
+}
+
 var scraperModule *scraper.Module
+var Config *AppConfig
 
 func init() {
+	Config = setupConfig()
+
 	setupLogrus()
 	scraperModule = setupScraperModule()
 
