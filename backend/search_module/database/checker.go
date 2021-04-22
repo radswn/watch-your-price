@@ -18,7 +18,7 @@ type Product struct {
 	Price string
 }
 
-func NewDatabaseChecker(module *scraper.Module) *Checker {
+func New(module *scraper.Module) *Checker {
 	db, err := sql.Open("sqlite3", "file:../db.sqlite3")
 	if err != nil {
 		logrus.WithError(err).Fatal("Cannot connect to the database")
