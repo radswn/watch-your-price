@@ -74,12 +74,16 @@ func setupLogrus() {
 		},
 	})
 
-	file, err := os.OpenFile("scraper.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		logrus.SetOutput(os.Stdout)
-		logrus.WithError(err).Warn("Cannot open log file. Logging to stdout.")
+	if Config.Profile == "prod" {
+		file, err := os.OpenFile("scraper.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			logrus.SetOutput(os.Stdout)
+			logrus.WithError(err).Warn("Cannot open log file. Logging to stdout.")
+		} else {
+			logrus.SetOutput(file)
+		}
 	} else {
-		logrus.SetOutput(file)
+		logrus.SetOutput(os.Stdout)
 	}
 
 	// adds information about location of log
