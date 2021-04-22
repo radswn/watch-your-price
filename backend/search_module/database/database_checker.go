@@ -10,6 +10,12 @@ type Checker struct {
 	Database *sql.DB
 }
 
+type Product struct {
+	Id    string
+	Link  string
+	Price float32
+}
+
 func NewDatabaseChecker() *Checker {
 	db, err := sql.Open("sqlite3", "file:../db.sqlite3")
 	if err != nil {
