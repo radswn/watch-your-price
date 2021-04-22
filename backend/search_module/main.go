@@ -156,11 +156,8 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(result)
 }
 
-func checkDatabaseHandler(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(struct {
-		Status string `json:"status"`
-	}{Status: "ok"})
+func checkDatabaseHandler(_ http.ResponseWriter, _ *http.Request) {
+	databaseChecker.UpdatePrices()
 }
 
 func convertWebsite(websiteStr string) (scraper.WebsiteType, error) {
