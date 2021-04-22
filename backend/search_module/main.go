@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -24,6 +25,15 @@ func init() {
 	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
 	r.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
 	r.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
+
+	db := NewDatabaseChecker()
+
+	defer func(database *sql.DB) {
+		err := database.Close()
+		if err != nil {
+			logrus.WithError(err).Warn("Cannot close database")
+		}
+	}(db.database)
 
 	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
