@@ -41,7 +41,7 @@ func setupLogrus() {
 		},
 	})
 
-	file, err := os.OpenFile("search.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("scraper.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		logrus.SetOutput(os.Stdout)
 		logrus.WithError(err).Warn("Cannot open log file. Logging to stdout.")
