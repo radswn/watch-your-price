@@ -43,12 +43,6 @@ func main() {
 
 	defer databaseChecker.CloseDatabase()
 
-	products := databaseChecker.GetAllProducts()
-
-	for i, product := range products {
-		fmt.Printf("%d %#v\n", i, product)
-	}
-
 	logrus.Fatal(http.ListenAndServe(":8001", router))
 }
 
@@ -83,8 +77,10 @@ func setupLogrus() {
 		} else {
 			logrus.SetOutput(file)
 		}
+		logrus.SetLevel(logrus.InfoLevel)
 	} else {
 		logrus.SetOutput(os.Stdout)
+		logrus.SetLevel(logrus.DebugLevel)
 	}
 
 	// adds information about location of log
