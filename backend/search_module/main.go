@@ -23,6 +23,7 @@ func init() {
 	r := mux.NewRouter().StrictSlash(true)
 	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
 	r.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
+	r.Handle("/checkdatabase", http.HandlerFunc(checkDatabaseHandler)).Methods("GET")
 
 	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
@@ -119,6 +120,13 @@ func checkHandler(w http.ResponseWriter, r *http.Request) {
 	result, _ := scraperModule.CheckPrice(request)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(result)
+}
+
+func checkDatabaseHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(struct {
+		Status string `json:"status"`
+	}{Status: "ok"})
 }
 
 func convertWebsite(websiteStr string) (scraper.WebsiteType, error) {
