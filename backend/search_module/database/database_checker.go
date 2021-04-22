@@ -29,3 +29,34 @@ func NewDatabaseChecker() *Checker {
 	}
 	return &Checker{Database: db}
 }
+
+func (c *Checker) GetAllProducts() []Product {
+	var result []Product
+
+	rows, err := c.Database.Query("SELECT id, link, price FROM entities_product")
+	if err != nil {
+		logrus.WithError(err).Warn("Cannot get products from database")
+		return result
+	}
+
+	defer func(rows *sql.Rows) {
+		_ = rows.Close()
+	}(rows)
+
+	for rows.Next() {
+		var product Product
+		err := rows.Scan(&product.Id, &product.Link, &product.Price)
+		if err != nil {
+			logrus.WithError(err).Warn("Cannot get information for some products")
+		}
+		result = append(result, product)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		logrus.WithError(err).Warn("Cannot get information for some products")
+		return []Product{}
+	}
+
+	return result
+}
