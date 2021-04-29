@@ -5,30 +5,61 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"runtime"
+	"search_module/database"
 	"search_module/scraper"
 	"strconv"
 	"strings"
 )
 
+type AppConfig struct {
+	Profile string
+}
+
+var Config *AppConfig
 var scraperModule *scraper.Module
+var databaseChecker *database.Checker
+var router *mux.Router
 
 func init() {
+	Config = setupConfig()
+
 	setupLogrus()
 	scraperModule = setupScraperModule()
+	databaseChecker = database.New(scraperModule)
 
-	r := mux.NewRouter().StrictSlash(true)
-	r.Handle("/search", http.HandlerFunc(searchHandler)).Methods("GET")
-	r.Handle("/check", http.HandlerFunc(checkHandler)).Methods("GET")
+	router = mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/search", searchHandler).Methods("GET")
+	router.HandleFunc("/check", checkHandler).Methods("GET")
+	router.HandleFunc("/update", func(_ http.ResponseWriter, _ *http.Request) {
+		databaseChecker.UpdatePrices()
+	})
 
-	logrus.Fatal(http.ListenAndServe(":8001", r))
 }
 
 func main() {
 
+	defer databaseChecker.CloseDatabase()
+
+	logrus.Fatal(http.ListenAndServe(":8001", router))
+}
+
+func setupConfig() *AppConfig {
+	var config AppConfig
+
+	err := godotenv.Load()
+	if err != nil {
+		logrus.WithError(err).Warn("Cannot use env variables, use default")
+		return &AppConfig{Profile: "dev"}
+	}
+
+	config.Profile = os.Getenv("PROFILE")
+
+	return &config
 }
 
 func setupLogrus() {
@@ -40,12 +71,18 @@ func setupLogrus() {
 		},
 	})
 
-	file, err := os.OpenFile("search.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		logrus.SetOutput(os.Stdout)
-		logrus.WithError(err).Warn("Cannot open log file. Logging to stdout.")
+	if Config.Profile == "prod" {
+		file, err := os.OpenFile("scraper.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			logrus.SetOutput(os.Stdout)
+			logrus.WithError(err).Warn("Cannot open log file. Logging to stdout.")
+		} else {
+			logrus.SetOutput(file)
+		}
+		logrus.SetLevel(logrus.InfoLevel)
 	} else {
-		logrus.SetOutput(file)
+		logrus.SetOutput(os.Stdout)
+		logrus.SetLevel(logrus.DebugLevel)
 	}
 
 	// adds information about location of log
