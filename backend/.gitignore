@@ -1,10 +1,11 @@
-/backend
 .idea/
 __pycache__/
 env/
 venv/
+migrations/
 
 db.sqlite3
-
-search_module/search.log
+identifier.sqlite
 search_module/main
+search_module/*.log
+.env
